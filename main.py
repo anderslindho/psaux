@@ -1,16 +1,34 @@
-# This is a sample Python script.
+import sys
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+from psaux.particle import Particle, Position, Velocity
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+class Application:
+    """main application; provides run-loop"""
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    def __init__(self, particles=None):
+        self.running = True
+        if particles is None:
+            self.particles = []
+
+    def add_particle(self, particle: Particle):
+        self.particles.append(particle)
+
+    def run(self):
+        while self.running:
+            for particle in self.particles:
+                particle.update()
+                print(f"The particle's position is {particle.position}")
+
+
+if __name__ == "__main__":
+    app = Application()
+    app.add_particle(
+        Particle(
+            Position(0, 0),
+            0.0,
+            Velocity(0.1, 0.2),
+        )
+    )
+    app.run()
+    sys.exit()
