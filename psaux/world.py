@@ -10,6 +10,7 @@ from psaux.config import (
     HEIGHT,
     GRAVITY,
     PARTICLE_START_POINT,
+    DISTANCE_LIMIT,
     SUN_MASS,
     SUN_RADIUS,
     SUN_COLOR,
@@ -32,18 +33,22 @@ class World:
         self.particle_batch = pyglet.graphics.Batch()
         self.particles = list()
 
-    def spawn_particle(self, x: float = None, y: float = None):
+    def spawn_particle(
+        self, x: float = None, y: float = None, dx: float = None, dy: float = None
+    ):
+        starting_point = [x, y]
         if x is None and y is None:
             starting_point = list(PARTICLE_START_POINT)
             starting_point[1] += (random.random() - 0.5) * 50
-        else:
-            starting_point = [x, y]
+        if dx is None and dy is None:
+            dx = (random.random() + 0.1) * 100
+            dy = (random.random() - 0.5) * HEIGHT / 8
 
         particle = self.particle_batch.add(
             1, GL_POINTS, None, ("v2f/stream", starting_point)
         )
-        particle.dx = (random.random() + 0.1) * 100
-        particle.dy = (random.random() - 0.5) * HEIGHT / 8
+        particle.dx = dx
+        particle.dy = dy
         particle.acc_x, particle.acc_y = 0.0, 0.0
         particle.mass = 0.1
         particle.dead = False
@@ -60,7 +65,7 @@ class World:
             x_position = vertices[0]
             y_position = vertices[1]
 
-            # check boundaries, else kill
+            # check collision with sun
             # todo: transfer force onto sun when colliding
             if (math.fabs(x_position - self.sun.x) < self.sun.radius) and (
                 math.fabs(y_position - self.sun.y) < self.sun.radius
@@ -68,6 +73,15 @@ class World:
                 particle.delete()
                 particle.dead = True
                 print(f"particle died at ({x_position}, {y_position})")
+                continue
+
+            # check outer boundaries, to save some processing power
+            if (math.fabs(x_position - self.sun.x) > DISTANCE_LIMIT) or (
+                math.fabs(y_position - self.sun.y) > DISTANCE_LIMIT
+            ):
+                particle.delete()
+                particle.dead = True
+                print("particle escaped into deep space")
                 continue
 
             # apply forces onto particles from sun

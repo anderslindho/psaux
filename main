@@ -1,6 +1,9 @@
-import pyglet
-from pyglet.gl import glViewport
+#!/usr/bin/env python3
 
+import pyglet
+from pyglet.window import mouse
+
+from psaux.utils import Vector2d
 from psaux.world import World
 from psaux.config import WIDTH, HEIGHT, DELTA_TIME, MAX_PARTICLES, MAX_ADD_PARTICLES
 
@@ -11,6 +14,8 @@ class ParticleWindow(pyglet.window.Window):
         pyglet.gl.glClearColor(0.15, 0.1, 0.2, 1.0)
         pyglet.clock.schedule_interval(self.update, DELTA_TIME)
         self.world = World()
+        self.click_coord = None
+        self.drag = False
 
     def on_draw(self):
         self.clear()
@@ -25,11 +30,23 @@ class ParticleWindow(pyglet.window.Window):
         ):
             self.world.spawn_particle()
 
-    def on_mouse_press(self, x, y, button, modifiers):
-        if button == 1 and modifiers == 0:
-            self.world.spawn_particle(x, y)
-        if button == 1 and modifiers == 1:
+    def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
+        self.click_coord = (x, y)
+        if modifiers == 1:
             self.world.place_sun(x, y)
+
+    def on_mouse_drag(self, x: float, y: float, dx: float, dy: float, buttons: int, modifiers: int):
+        self.drag = True
+
+    def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
+        if self.drag and modifiers == 0:
+            start_x, start_y = self.click_coord
+            movement_vector = Vector2d.from_difference(self.click_coord, (x, y))
+            final_x, final_y = movement_vector.as_tuple()
+            self.world.spawn_particle(start_x, start_y, final_x, final_y)
+
+        self.click_coord = None
+        self.drag = False
 
 
 if __name__ == "__main__":

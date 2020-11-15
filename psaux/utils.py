@@ -20,9 +20,17 @@ class Vector2d:
     def magnitude(self) -> float:
         return math.hypot(self.x, self.y)
 
+    def as_tuple(self):
+        return self.x, self.y
+
     @classmethod
     def from_tuple(cls, position: tuple):
         return cls(position[0], position[1])
+
+    @classmethod
+    def from_difference(cls, start: tuple, end: tuple):
+        difference = end[0] - start[0], end[1] - start[1]
+        return cls.from_tuple(difference)
 
     @staticmethod
     def distance_between(position_one: tuple, position_two: tuple) -> float:
