@@ -3,8 +3,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Position:
-    x: int
-    y: int
+    x: float
+    y: float
 
 
 @dataclass
@@ -21,6 +21,7 @@ class Particle:
         self.mass = mass
         self.velocity = velocity
 
-    def update(self):
-        self.position.x += self.velocity.x
-        self.position.y += self.velocity.y
+    def update(self, delta_time: float):
+        self.position.x += self.velocity.x * delta_time
+        self.position.y += self.velocity.y * delta_time
+        # print(f"{self.position}")
