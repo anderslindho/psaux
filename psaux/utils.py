@@ -11,6 +11,15 @@ class Vector2d:
         _position = (self.x, self.y)
         return _position
 
+    @property
+    def angle(self) -> float:
+        radians = math.atan2(self.y, self.x)
+        return math.degrees(radians)
+
+    @property
+    def magnitude(self) -> float:
+        return math.hypot(self.x, self.y)
+
     @classmethod
     def from_tuple(cls, position: tuple):
         return cls(position[0], position[1])

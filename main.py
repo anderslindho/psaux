@@ -23,7 +23,13 @@ class ParticleWindow(pyglet.window.Window):
         for i in range(
             min(MAX_ADD_PARTICLES, MAX_PARTICLES - len(self.world.particles))
         ):
-            self.world.add_particle()
+            self.world.spawn_particle()
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if button == 1 and modifiers == 0:
+            self.world.spawn_particle(x, y)
+        if button == 1 and modifiers == 1:
+            self.world.place_sun(x, y)
 
 
 if __name__ == "__main__":
