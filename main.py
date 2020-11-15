@@ -4,6 +4,7 @@ import math
 import pyglet
 from pyglet.gl import GL_POINTS
 
+from psaux.utils import Vector2d
 
 FPS = 120.0
 DELTA_TIME = 1.0 / FPS
@@ -11,11 +12,13 @@ WIDTH = 800
 HEIGHT = 600
 CENTER = (WIDTH / 2, HEIGHT / 2)
 
-MAX_PARTICLES = 50
+MAX_PARTICLES = 100
 MAX_ADD_PARTICLES = 1
 GRAVITY = 1.5
 START_POINT = [WIDTH / 2, 500]
 
+SUN_MASS = 250
+SUN_RADIUS = 25
 SUN_COLOR = (255, 255, 0)
 
 
@@ -28,7 +31,8 @@ class ParticleWindow(pyglet.window.Window):
 
     def on_draw(self):
         self.clear()
-        self.world.draw()
+        self.world.particle_batch.draw()
+        self.world.sun.draw()
 
     def update(self, delta_time: float):
         self.world.update_particles(delta_time)
@@ -45,18 +49,18 @@ class World:
         self.particle_batch = pyglet.graphics.Batch()
         self.particles = list()
         self.sun = pyglet.shapes.Circle(
-            CENTER[0], CENTER[1], radius := 15, color=SUN_COLOR
+            CENTER[0], CENTER[1], SUN_RADIUS, color=SUN_COLOR
         )
         self.sun.x, self.sun.y = self.sun.position
         self.sun.dx, self.sun.dy = 0, 0
-        self.sun.mass = radius
+        self.sun.mass = SUN_MASS
 
     def update_sun(self, delta_time: float):
         # todo: add gravity
-        xpos, ypos = self.sun.position
-        xpos += 5 * delta_time
-        ypos += 5 * delta_time
-        self.sun.position = (xpos, ypos)
+        x_position, y_position = self.sun.position
+        x_position += self.sun.dx * delta_time
+        y_position += self.sun.dy * delta_time
+        self.sun.position = (x_position, y_position)
 
     def add_particles(self):
         starting_point = list(START_POINT)
@@ -73,27 +77,36 @@ class World:
     def update_particles(self, delta_time: float):
         for particle in self.particles:
             vertices = particle.vertices
-            xpos = vertices[0]
-            ypos = vertices[1]
+            x_position = vertices[0]
+            y_position = vertices[1]
 
             # check boundaries, else kill
-            if (math.fabs(xpos - self.sun.x) < self.sun.radius) and (
-                math.fabs(ypos - self.sun.y) < self.sun.radius
+            if (math.fabs(x_position - self.sun.x) < self.sun.radius) and (
+                math.fabs(y_position - self.sun.y) < self.sun.radius
             ):
                 particle.delete()
                 particle.dead = True
-                print(f"particle died at ({xpos}, {ypos})")
+                print(f"particle died at ({x_position}, {y_position})")
 
             # apply "gravity" // todo: introduce more realistic gravity
-            particle.dy -= (ypos - self.sun.y) * GRAVITY * delta_time
-            particle.dx -= (xpos - self.sun.x) * GRAVITY * delta_time
+            particle.dy -= (
+                GRAVITY
+                * self.sun.mass
+                * (y_position - self.sun.y)
+                * delta_time
+                / Vector2d.distance_between(particle.vertices, self.sun.position) ** 3
+            )
+            particle.dx -= (
+                GRAVITY
+                * self.sun.mass
+                * (x_position - self.sun.x)
+                * delta_time
+                / Vector2d.distance_between(particle.vertices, self.sun.position) ** 3
+            )
+            # particle.dx -= GRAVITY * (x_position - self.sun.x) * delta_time
             vertices[0] += particle.dx * delta_time
             vertices[1] += particle.dy * delta_time
         self.particles = [p for p in self.particles if not p.dead]
-
-    def draw(self):
-        self.particle_batch.draw()
-        self.sun.draw()
 
 
 if __name__ == "__main__":
