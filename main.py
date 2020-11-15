@@ -16,6 +16,8 @@ MAX_ADD_PARTICLES = 1
 GRAVITY = 1.5
 START_POINT = [WIDTH / 2, 500]
 
+SUN_COLOR = (255, 255, 0)
+
 
 class ParticleWindow(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
@@ -42,19 +44,19 @@ class World:
     def __init__(self):
         self.particle_batch = pyglet.graphics.Batch()
         self.particles = list()
-        self.sun = self.add_sun()
-
-    def add_sun(self):
-        sun = pyglet.shapes.Circle(
-            CENTER[0], CENTER[1], radius := 15, color=(255, 255, 0)
+        self.sun = pyglet.shapes.Circle(
+            CENTER[0], CENTER[1], radius := 15, color=SUN_COLOR
         )
-        sun.x, sun.y = sun.position
-        sun.dx, sun.dy = 0, 0
-        sun.mass = radius
-        return sun
+        self.sun.x, self.sun.y = self.sun.position
+        self.sun.dx, self.sun.dy = 0, 0
+        self.sun.mass = radius
 
     def update_sun(self, delta_time: float):
-        pass
+        # todo: add gravity
+        xpos, ypos = self.sun.position
+        xpos += 5 * delta_time
+        ypos += 5 * delta_time
+        self.sun.position = (xpos, ypos)
 
     def add_particles(self):
         starting_point = list(START_POINT)
@@ -82,7 +84,7 @@ class World:
                 particle.dead = True
                 print(f"particle died at ({xpos}, {ypos})")
 
-            # apply "gravity"
+            # apply "gravity" // todo: introduce more realistic gravity
             particle.dy -= (ypos - self.sun.y) * GRAVITY * delta_time
             particle.dx -= (xpos - self.sun.x) * GRAVITY * delta_time
             vertices[0] += particle.dx * delta_time
