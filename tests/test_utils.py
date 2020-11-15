@@ -1,5 +1,3 @@
-import pytest
-
 from psaux.utils import Vector2d
 
 
