@@ -5,16 +5,12 @@ import pyglet
 from pyglet.gl import GL_POINTS
 
 from psaux.utils import Vector2d
-from psaux.config import WIDTH, HEIGHT
+from psaux.config import WIDTH, HEIGHT, GRAVITY, PARTICLE_START_POINT
 
-GRAVITY = 1.5
-
-SUN_MASS = 500000
+SUN_MASS = 5000000
 SUN_RADIUS = 25
 SUN_COLOR = (255, 255, 0)
 SUN_POSITION = (WIDTH / 2, HEIGHT / 2)
-
-PARTICLE_START_POINT = [WIDTH / 2, 500]
 
 
 class World:
@@ -41,6 +37,9 @@ class World:
         particle.dy = (random.random() - 0.5) * HEIGHT / 4
         particle.mass = 1
         particle.dead = False
+        print(
+            f"particle spawned at {tuple(starting_point)} with velocity ({particle.dx}, {particle.dy})"
+        )
         self.particles.append(particle)
 
     def apply_forces(self, delta_time: float):

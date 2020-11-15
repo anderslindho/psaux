@@ -1,13 +1,7 @@
 import pyglet
 
 from psaux.world import World
-from psaux.config import WIDTH, HEIGHT
-
-FPS = 120.0
-DELTA_TIME = 1.0 / FPS
-
-MAX_PARTICLES = 100
-MAX_ADD_PARTICLES = 1
+from psaux.config import WIDTH, HEIGHT, DELTA_TIME, MAX_PARTICLES, MAX_ADD_PARTICLES
 
 
 class ParticleWindow(pyglet.window.Window):
