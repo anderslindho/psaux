@@ -1,4 +1,5 @@
 import pyglet
+from pyglet.gl import glViewport
 
 from psaux.world import World
 from psaux.config import WIDTH, HEIGHT, DELTA_TIME, MAX_PARTICLES, MAX_ADD_PARTICLES
@@ -6,8 +7,8 @@ from psaux.config import WIDTH, HEIGHT, DELTA_TIME, MAX_PARTICLES, MAX_ADD_PARTI
 
 class ParticleWindow(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        pyglet.gl.glClearColor(0.2, 0.1, 0.3, 1.0)
+        super().__init__(width=WIDTH, height=HEIGHT, resizable=True, *args, **kwargs)
+        pyglet.gl.glClearColor(0.15, 0.1, 0.2, 1.0)
         pyglet.clock.schedule_interval(self.update, DELTA_TIME)
         self.world = World()
 
@@ -26,5 +27,6 @@ class ParticleWindow(pyglet.window.Window):
 
 
 if __name__ == "__main__":
-    ParticleWindow(width=WIDTH, height=HEIGHT, caption="Hello, World!")
+    window = ParticleWindow(caption="psaux")
+    window.set_minimum_size(640, 480)
     pyglet.app.run()
