@@ -86,4 +86,4 @@ class World:
         self.particles.append(planet)
 
     def place_sun(self, x, y):
-        self.sun.position = (x, y, 0)
+        self.sun.position = Vector3([x, y, 0])
