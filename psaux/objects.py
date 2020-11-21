@@ -1,4 +1,6 @@
+from abc import abstractmethod
 from math import log
+
 import pyglet
 from pyrr import vector, Vector3
 
@@ -11,18 +13,11 @@ class PhysicalObject:
         position: Vector3,
         mass: float,
         velocity: Vector3,
-        color: tuple = (255, 255, 255),
-        batch=None,
     ):
         self.position = position  # [m, m, m]
         self._mass = mass  # kg
         self.momentum = mass * velocity
         self.forces = Vector3([0.0, 0.0, 0.0])
-        self.radius = log(mass, 2)  # m
-
-        self.vertices = pyglet.shapes.Circle(
-            self.position[0], self.position[1], self.radius, color=color, batch=batch
-        )
 
     @property
     def mass(self):
@@ -37,15 +32,15 @@ class PhysicalObject:
     def __repr__(self):
         return str(vars(self))
 
-    def update(self, delta_time: float):
+    def tick(self, delta_time: float):
         self.momentum += self.forces * delta_time
         self.position = self.position + self.momentum / self.mass * delta_time
         self.vertices.position = (self.position[0], self.position[1])
         self.forces = Vector3([0.0, 0.0, 0.0])
 
+    @abstractmethod
     def boundary_check(self, other) -> bool:
-        distance_vec = self.position - other.position
-        return vector.length(distance_vec) < self.radius + other.radius
+        return
 
     def gravitational_force(self, other):
         """F_v = -G * (M_1 * M_2)/(r^2) * r_v"""
@@ -62,3 +57,23 @@ class PhysicalObject:
     def elastic_collision_force(self, other):
         """conservation of momentum"""
         print(f"collision between\n- {self}\n- {other}")
+
+
+class Circle(PhysicalObject):
+    def __init__(
+        self,
+        color: tuple = (255, 255, 255),
+        batch=None,
+        *args,
+        **kwargs,
+    ):
+        super(Circle, self).__init__(*args, **kwargs)
+
+        self.radius = log(self.mass, 2)  # m
+        self.vertices = pyglet.shapes.Circle(
+            self.position[0], self.position[1], self.radius, color=color, batch=batch
+        )
+
+    def boundary_check(self, other) -> bool:
+        distance_vec = self.position - other.position
+        return vector.length(distance_vec) < self.radius + other.radius

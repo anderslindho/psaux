@@ -11,7 +11,7 @@ from psaux.config import (
     RED,
     GREEN,
 )
-from psaux.objects import PhysicalObject
+from psaux.objects import Circle
 
 
 class World:
@@ -24,7 +24,7 @@ class World:
         self.particle_batch = pyglet.graphics.Batch()
 
         # create sun
-        self.sun = PhysicalObject(
+        self.sun = Circle(
             position=Vector3([WIDTH / 2.0, HEIGHT / 2.0, 0.0]),
             mass=100000.0,
             velocity=Vector3([0.0, 0.0, 0.0]),
@@ -35,7 +35,7 @@ class World:
 
         # create starting planets
         self.particles.append(
-            PhysicalObject(
+            Circle(
                 position=Vector3([200.0, 700.0, 0.0]),
                 mass=1000.0,
                 velocity=Vector3([1e-4, 4e-5, 0.0]),
@@ -44,7 +44,7 @@ class World:
             )
         )
         self.particles.append(
-            PhysicalObject(
+            Circle(
                 position=Vector3([400.0, 480.0, 0.0]),
                 mass=1000.0,
                 velocity=Vector3([2e-4, 2e-4, 0.0]),
@@ -63,7 +63,7 @@ class World:
                 first.elastic_collision_force(second)
 
         for particle in self.particles:
-            particle.update(time_step)
+            particle.tick(time_step)
 
         self.real_time += delta_time
         self.physics_time += delta_time * self.time_warp_factor
@@ -76,7 +76,7 @@ class World:
     ):
         mass = 100.0
         velocity = Vector3([velocity_right, velocity_up, 0.0])
-        planet = PhysicalObject(
+        planet = Circle(
             position=Vector3([x, y, 0.0]),
             mass=mass,
             velocity=velocity,
