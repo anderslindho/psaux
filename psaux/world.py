@@ -1,123 +1,89 @@
-import math
-import random
+import itertools
 
 import pyglet
-from pyglet.gl import GL_POINTS
 
-from psaux.utils import Vector2d
+from pyrr import Vector3
+
 from psaux.config import (
     WIDTH,
     HEIGHT,
-    GRAVITY,
-    PARTICLE_START_POINT,
-    DISTANCE_LIMIT,
-    SUN_MASS,
-    SUN_RADIUS,
-    SUN_COLOR,
+    BLUE,
+    RED,
+    GREEN,
 )
+from psaux.objects import PhysicalObject
 
 
 class World:
     def __init__(self):
-        sun_position = (WIDTH / 2, HEIGHT / 2)
+        self.real_time = 0.0  # seconds
+        self.physics_time = 0.0  # seconds
+        self.time_warp_factor = 1e5
+
+        self.particles = list()
+        self.particle_batch = pyglet.graphics.Batch()
 
         # create sun
-        self.sun = pyglet.shapes.Circle(
-            sun_position[0], sun_position[1], SUN_RADIUS, color=SUN_COLOR
+        self.sun = PhysicalObject(
+            position=Vector3([WIDTH / 2.0, HEIGHT / 2.0, 0.0]),
+            mass=100000.0,
+            velocity=Vector3([0.0, 0.0, 0.0]),
+            color=RED,
+            batch=self.particle_batch,
         )
-        self.sun.x, self.sun.y = self.sun.position
-        self.sun.dx, self.sun.dy = 0, 0
-        self.sun.mass = SUN_MASS
+        self.particles.append(self.sun)
 
-        # create particles
-        self.particle_batch = pyglet.graphics.Batch()
-        self.particles = list()
-
-    def spawn_particle(
-        self, x: float = None, y: float = None, dx: float = None, dy: float = None
-    ):
-        starting_point = [x, y]
-        if x is None and y is None:
-            starting_point = list(PARTICLE_START_POINT)
-            starting_point[1] += (random.random() - 0.5) * 50
-        if dx is None and dy is None:
-            dx = (random.random() + 0.1) * 100
-            dy = (random.random() - 0.5) * HEIGHT / 8
-
-        particle = self.particle_batch.add(
-            1, GL_POINTS, None, ("v2f/stream", starting_point)
+        # create starting planets
+        self.particles.append(
+            PhysicalObject(
+                position=Vector3([200.0, 700.0, 0.0]),
+                mass=1000.0,
+                velocity=Vector3([1e-4, 4e-5, 0.0]),
+                color=GREEN,
+                batch=self.particle_batch,
+            )
         )
-        particle.dx = dx
-        particle.dy = dy
-        particle.acc_x, particle.acc_y = 0.0, 0.0
-        particle.mass = 0.1
-        particle.dead = False
-        movement_vector = Vector2d(particle.dx, particle.dy)
-        print(
-            f"particle spawned at {tuple(starting_point)} with angle {movement_vector.angle} and magnitude {movement_vector.magnitude}"
+        self.particles.append(
+            PhysicalObject(
+                position=Vector3([400.0, 480.0, 0.0]),
+                mass=1000.0,
+                velocity=Vector3([2e-4, 2e-4, 0.0]),
+                color=GREEN,
+                batch=self.particle_batch,
+            )
         )
-        self.particles.append(particle)
 
-    def apply_forces(self, delta_time: float):
+    def update(self, delta_time: float):
+        time_step = delta_time * self.time_warp_factor
+        for first, second in itertools.combinations(self.particles, 2):
+            if not first.boundary_check(second):
+                first.forces += first.gravitational_force(second)
+                second.forces -= first.forces
+            else:
+                first.elastic_collision_force(second)
+
         for particle in self.particles:
-            # todo: modify acceleration instead of velocity
-            vertices = particle.vertices
-            x_position = vertices[0]
-            y_position = vertices[1]
+            particle.update(time_step)
 
-            # check collision with sun
-            # todo: transfer force onto sun when colliding
-            if (math.fabs(x_position - self.sun.x) < self.sun.radius) and (
-                math.fabs(y_position - self.sun.y) < self.sun.radius
-            ):
-                particle.delete()
-                particle.dead = True
-                print(f"particle died at ({x_position}, {y_position})")
-                continue
+        self.real_time += delta_time
+        self.physics_time += delta_time * self.time_warp_factor
 
-            # check outer boundaries, to save some processing power
-            if (math.fabs(x_position - self.sun.x) > DISTANCE_LIMIT) or (
-                math.fabs(y_position - self.sun.y) > DISTANCE_LIMIT
-            ):
-                particle.delete()
-                particle.dead = True
-                print("particle escaped into deep space")
-                continue
+    def draw(self):
+        self.particle_batch.draw()
 
-            # apply forces onto particles from sun
-            particle.dy -= (
-                GRAVITY
-                * self.sun.mass
-                * (y_position - self.sun.y)
-                / Vector2d.distance_between(particle.vertices, self.sun.position) ** 3
-            )
-            particle.dx -= (
-                GRAVITY
-                * self.sun.mass
-                * (x_position - self.sun.x)
-                / Vector2d.distance_between(particle.vertices, self.sun.position) ** 3
-            )
-            vertices[0] += particle.dx * delta_time
-            vertices[1] += particle.dy * delta_time
-
-            # apply forces onto sun from particles
-            self.sun.dy -= (
-                GRAVITY
-                * particle.mass
-                * (self.sun.y - y_position)
-                / Vector2d.distance_between(particle.vertices, self.sun.position) ** 3
-            )
-            self.sun.dx -= (
-                GRAVITY
-                * particle.mass
-                * (self.sun.x - x_position)
-                / Vector2d.distance_between(particle.vertices, self.sun.position) ** 3
-            )
-            self.sun.x += self.sun.dx * delta_time
-            self.sun.y += self.sun.dy * delta_time
-            self.sun.position = (self.sun.x, self.sun.y)
-        self.particles = [p for p in self.particles if not p.dead]
+    def spawn_planet(
+        self, x: float, y: float, velocity_right: float, velocity_up: float
+    ):
+        mass = 100.0
+        velocity = Vector3([velocity_right, velocity_up, 0.0])
+        planet = PhysicalObject(
+            position=Vector3([x, y, 0.0]),
+            mass=mass,
+            velocity=velocity,
+            color=BLUE,
+            batch=self.particle_batch,
+        )
+        self.particles.append(planet)
 
     def place_sun(self, x, y):
-        self.sun.position = (x, y)
-        self.sun.dx, self.sun.dy = 0, 0
+        self.sun.position = (x, y, 0)
