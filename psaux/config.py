@@ -1,15 +1,20 @@
-WIDTH = 1024
-HEIGHT = 768
-MAX_FPS = 60
+from dataclasses import dataclass
 
-DELTA_TIME = 1.0 / MAX_FPS
-GRAVITY_C = 6.67e-11
 
-DISTANCE_LIMIT = 700
+@dataclass
+class PsauxConfig:
+    width: int = 1024
+    height: int = 768
+    max_fps: int = 60
+    bg_color: tuple = (0.15, 0.1, 0.2, 1.0)
 
-RED = (200, 100, 100)
-GREEN = (100, 200, 100)
-BLUE = (100, 100, 200)
 
-SUN_MASS = 5000
-SUN_POSITION = (WIDTH / 2, HEIGHT / 2)
+@dataclass()
+class WorldSettings:
+    gravity_constant: float = 6.67e-11
+    time_warp_factor: float = 1e5
+    time_warp_multiplier: float = 1e4
+    drag_sensitivity: float = 5e-6
+
+    def delta_time(self):
+        return 1.0 / self.max_fps

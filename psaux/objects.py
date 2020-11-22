@@ -4,7 +4,7 @@ from math import log
 import pyglet
 from pyrr import vector, Vector3
 
-from psaux.config import GRAVITY_C
+from psaux.config import WorldSettings
 
 
 class PhysicalObject:
@@ -35,26 +35,28 @@ class PhysicalObject:
     def tick(self, delta_time: float):
         self.momentum += self.forces * delta_time
         self.position = self.position + self.momentum / self.mass * delta_time
-        self.vertices.position = (self.position[0], self.position[1])
         self.forces = Vector3([0.0, 0.0, 0.0])
 
     @abstractmethod
-    def boundary_check(self, other) -> bool:
+    def overlaps_with(self, other) -> bool:
         return
 
-    def gravitational_force(self, other):
+    def gravitational_force_from(self, other):
         """F_v = -G * (M_1 * M_2)/(r^2) * r_v"""
         distance_vec = self.position - other.position
         distance_vec_magnitude = vector.length(distance_vec)
         unit_vector = distance_vec / distance_vec_magnitude
 
         force_magnitude = (
-            GRAVITY_C * self.mass * other.mass / distance_vec_magnitude ** 2
+            WorldSettings.gravity_constant
+            * self.mass
+            * other.mass
+            / distance_vec_magnitude ** 2
         )
         force_vector = -force_magnitude * unit_vector
         return force_vector
 
-    def elastic_collision_force(self, other):
+    def elastic_collision_force_from(self, other):
         """conservation of momentum"""
         print(f"collision between\n- {self}\n- {other}")
 
@@ -74,6 +76,10 @@ class Circle(PhysicalObject):
             self.position[0], self.position[1], self.radius, color=color, batch=batch
         )
 
-    def boundary_check(self, other) -> bool:
+    def tick(self, delta_time: float):
+        super(Circle, self).tick(delta_time)
+        self.vertices.position = (self.position[0], self.position[1])
+
+    def overlaps_with(self, other) -> bool:
         distance_vec = self.position - other.position
         return vector.length(distance_vec) < self.radius + other.radius

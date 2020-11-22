@@ -4,37 +4,36 @@ import pyglet
 
 from pyrr import Vector3
 
-from psaux.config import (
-    WIDTH,
-    HEIGHT,
-    BLUE,
-    RED,
-    GREEN,
-)
+from psaux.config import WorldSettings, PsauxConfig
 from psaux.objects import Circle
+from psaux.utils import RED, GREEN, BLUE
 
 
 class World:
-    def __init__(self):
+    def __init__(self, settings: WorldSettings = None):
+        if settings is None:
+            self.settings = WorldSettings()
+        else:
+            self.settings = settings
+
         self.real_time = 0.0  # seconds
         self.physics_time = 0.0  # seconds
-        self.time_warp_factor = 1e5
 
-        self.particles = list()
+        self.entities = list()
         self.particle_batch = pyglet.graphics.Batch()
 
         # create sun
         self.sun = Circle(
-            position=Vector3([WIDTH / 2.0, HEIGHT / 2.0, 0.0]),
+            position=Vector3([PsauxConfig.width / 2.0, PsauxConfig.height / 2.0, 0.0]),
             mass=100000.0,
             velocity=Vector3([0.0, 0.0, 0.0]),
             color=RED,
             batch=self.particle_batch,
         )
-        self.particles.append(self.sun)
+        self.entities.append(self.sun)
 
         # create starting planets
-        self.particles.append(
+        self.entities.append(
             Circle(
                 position=Vector3([200.0, 700.0, 0.0]),
                 mass=1000.0,
@@ -43,7 +42,7 @@ class World:
                 batch=self.particle_batch,
             )
         )
-        self.particles.append(
+        self.entities.append(
             Circle(
                 position=Vector3([400.0, 480.0, 0.0]),
                 mass=1000.0,
@@ -54,19 +53,19 @@ class World:
         )
 
     def update(self, delta_time: float):
-        time_step = delta_time * self.time_warp_factor
-        for first, second in itertools.combinations(self.particles, 2):
-            if not first.boundary_check(second):
-                first.forces += first.gravitational_force(second)
-                second.forces -= first.forces
+        time_step = delta_time * self.settings.time_warp_factor
+        for first, second in itertools.combinations(self.entities, 2):
+            if first.overlaps_with(second):
+                first.elastic_collision_force_from(second)
             else:
-                first.elastic_collision_force(second)
+                first.forces += first.gravitational_force_from(second)
+                second.forces -= first.forces
 
-        for particle in self.particles:
-            particle.tick(time_step)
+        for entity in self.entities:
+            entity.tick(time_step)
 
         self.real_time += delta_time
-        self.physics_time += delta_time * self.time_warp_factor
+        self.physics_time += delta_time * self.settings.time_warp_factor
 
     def draw(self):
         self.particle_batch.draw()
@@ -83,7 +82,7 @@ class World:
             color=BLUE,
             batch=self.particle_batch,
         )
-        self.particles.append(planet)
+        self.entities.append(planet)
 
     def place_sun(self, x, y):
         self.sun.position = Vector3([x, y, 0])
