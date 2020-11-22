@@ -20,7 +20,7 @@ class ParticleWindow(pyglet.window.Window):
         pyglet.clock.schedule_interval(self.update, 1.0 / config.max_fps)
 
         self.fps_display = pyglet.window.FPSDisplay(self)
-        self.mouse_line = pyglet.shapes.Line(0.0, 0.0, 0.0, 0.0, color=BLUE)
+        self.mouse_line = pyglet.shapes.Line(0.0, 0.0, 0.0, 0.0, width=2, color=BLUE)
         self.mouse_line.visible = False
         self.world = World()
 
@@ -76,6 +76,7 @@ class ParticleWindow(pyglet.window.Window):
         self.mouse_line.visible = False
 
     def on_mouse_scroll(self, x: float, y: float, scroll_x: float, scroll_y: float):
+        """changes physical time speed. can be negative"""
         self.world.settings.time_warp_factor += (
             scroll_x * self.world.settings.time_warp_multiplier
         )

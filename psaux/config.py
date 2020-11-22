@@ -17,4 +17,4 @@ class WorldSettings:
     drag_sensitivity: float = 5e-6
 
     def delta_time(self):
-        return 1.0 / self.max_fps
+        return 1.0 / PsauxConfig.max_fps

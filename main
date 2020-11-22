@@ -2,7 +2,6 @@
 
 import pyglet
 
-from psaux.config import PsauxConfig
 from psaux.window import ParticleWindow
 
 

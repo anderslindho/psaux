@@ -20,15 +20,15 @@ class World:
         self.physics_time = 0.0  # seconds
 
         self.entities = list()
-        self.particle_batch = pyglet.graphics.Batch()
+        self.entity_batch = pyglet.graphics.Batch()
 
         # create sun
         self.sun = Circle(
             position=Vector3([PsauxConfig.width / 2.0, PsauxConfig.height / 2.0, 0.0]),
-            mass=100000.0,
+            mass=1e6,
             velocity=Vector3([0.0, 0.0, 0.0]),
             color=RED,
-            batch=self.particle_batch,
+            batch=self.entity_batch,
         )
         self.entities.append(self.sun)
 
@@ -36,39 +36,41 @@ class World:
         self.entities.append(
             Circle(
                 position=Vector3([200.0, 700.0, 0.0]),
-                mass=1000.0,
-                velocity=Vector3([1e-4, 4e-5, 0.0]),
+                mass=1e4,
+                velocity=Vector3([3e-4, 4e-5, 0.0]),
                 color=GREEN,
-                batch=self.particle_batch,
+                batch=self.entity_batch,
             )
         )
         self.entities.append(
             Circle(
                 position=Vector3([400.0, 480.0, 0.0]),
-                mass=1000.0,
-                velocity=Vector3([2e-4, 2e-4, 0.0]),
+                mass=1e4,
+                velocity=Vector3([5e-4, 2e-4, 0.0]),
                 color=GREEN,
-                batch=self.particle_batch,
+                batch=self.entity_batch,
             )
         )
 
     def update(self, delta_time: float):
         time_step = delta_time * self.settings.time_warp_factor
+
         for first, second in itertools.combinations(self.entities, 2):
             if first.overlaps_with(second):
-                first.elastic_collision_force_from(second)
+                first.elastic_collision_with(second)
             else:
                 first.forces += first.gravitational_force_from(second)
                 second.forces -= first.forces
 
         for entity in self.entities:
             entity.tick(time_step)
+        self.entities = [entity for entity in self.entities if not entity.dead]
 
         self.real_time += delta_time
         self.physics_time += delta_time * self.settings.time_warp_factor
 
     def draw(self):
-        self.particle_batch.draw()
+        self.entity_batch.draw()
 
     def spawn_planet(
         self, x: float, y: float, velocity_right: float, velocity_up: float
@@ -80,7 +82,7 @@ class World:
             mass=mass,
             velocity=velocity,
             color=BLUE,
-            batch=self.particle_batch,
+            batch=self.entity_batch,
         )
         self.entities.append(planet)
 

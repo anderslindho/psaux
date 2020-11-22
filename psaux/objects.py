@@ -18,9 +18,10 @@ class PhysicalObject:
         self._mass = mass  # kg
         self.momentum = mass * velocity
         self.forces = Vector3([0.0, 0.0, 0.0])
+        self.dead = False
 
     @property
-    def mass(self):
+    def mass(self) -> float:
         return self._mass
 
     @mass.setter
@@ -29,20 +30,38 @@ class PhysicalObject:
         self._mass = value
         self.momentum *= factor
 
+    @property
+    def velocity(self) -> float:
+        return self.momentum / self.mass
+
+    @velocity.setter
+    def velocity(self, new_velocity: Vector3):
+        self.momentum = new_velocity * self.mass
+
     def __repr__(self):
         return str(vars(self))
 
-    def tick(self, delta_time: float):
+    def tick(self, delta_time: float) -> None:
+        # if forces too large, destroy
+
         self.momentum += self.forces * delta_time
-        self.position = self.position + self.momentum / self.mass * delta_time
+        self.position = (
+            self.position + self.velocity * delta_time
+        )  # todo: update velocity, deal w separately // done, anything else ?
         self.forces = Vector3([0.0, 0.0, 0.0])
 
     @abstractmethod
-    def overlaps_with(self, other) -> bool:
-        return
+    def die(self) -> None:
+        self.dead = True
 
-    def gravitational_force_from(self, other):
-        """F_v = -G * (M_1 * M_2)/(r^2) * r_v"""
+    @abstractmethod
+    def overlaps_with(self, other) -> bool:
+        return self.position == other.position
+
+    def gravitational_force_from(self, other) -> Vector3:
+        """
+        :math:`\vec{F} = -G * (m_1 * m_2)/(|r|^2) * \vec{r}`
+        """
         distance_vec = self.position - other.position
         distance_vec_magnitude = vector.length(distance_vec)
         unit_vector = distance_vec / distance_vec_magnitude
@@ -56,9 +75,13 @@ class PhysicalObject:
         force_vector = -force_magnitude * unit_vector
         return force_vector
 
-    def elastic_collision_force_from(self, other):
+    def elastic_collision_with(self, other):
         """conservation of momentum"""
         print(f"collision between\n- {self}\n- {other}")
+        if self.mass > other.mass:
+            other.die()
+        else:
+            self.die()
 
 
 class Circle(PhysicalObject):
@@ -76,9 +99,14 @@ class Circle(PhysicalObject):
             self.position[0], self.position[1], self.radius, color=color, batch=batch
         )
 
-    def tick(self, delta_time: float):
+    def tick(self, delta_time: float) -> None:
         super(Circle, self).tick(delta_time)
-        self.vertices.position = (self.position[0], self.position[1])
+        if not self.dead:
+            self.vertices.position = (self.position[0], self.position[1])
+
+    def die(self) -> None:
+        super(Circle, self).die()
+        self.vertices.delete()
 
     def overlaps_with(self, other) -> bool:
         distance_vec = self.position - other.position
