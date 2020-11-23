@@ -46,7 +46,7 @@ class World:
             Circle(
                 position=Vector3([400.0, 480.0, 0.0]),
                 mass=1e4,
-                velocity=Vector3([5e-4, 2e-4, 0.0]),
+                velocity=Vector3([2e-4, 2e-4, 0.0]),
                 color=GREEN,
                 batch=self.entity_batch,
             )

@@ -1,7 +1,8 @@
-from abc import abstractmethod
+import logging
 from math import log
 
 import pyglet
+import pyrr
 from pyrr import vector, Vector3
 
 from psaux.config import WorldSettings
@@ -14,7 +15,7 @@ class PhysicalObject:
         mass: float,
         velocity: Vector3,
     ):
-        self.position = position  # [m, m, m]
+        self.position = position  # [metres, metres, metres]
         self._mass = mass  # kg
         self.momentum = mass * velocity
         self.forces = Vector3([0.0, 0.0, 0.0])
@@ -43,18 +44,17 @@ class PhysicalObject:
 
     def tick(self, delta_time: float) -> None:
         # if forces too large, destroy
+        logging.debug(pyrr.vector.length(self.forces))
 
-        self.momentum += self.forces * delta_time
+        self.momentum += self.forces * delta_time  # acceleration ?
         self.position = (
             self.position + self.velocity * delta_time
         )  # todo: update velocity, deal w separately // done, anything else ?
         self.forces = Vector3([0.0, 0.0, 0.0])
 
-    @abstractmethod
     def die(self) -> None:
         self.dead = True
 
-    @abstractmethod
     def overlaps_with(self, other) -> bool:
         return self.position == other.position
 
@@ -77,7 +77,7 @@ class PhysicalObject:
 
     def elastic_collision_with(self, other):
         """conservation of momentum"""
-        print(f"collision between\n- {self}\n- {other}")
+        logging.debug(f"collision between\n- {self}\n- {other}")
         if self.mass > other.mass:
             other.die()
         else:
