@@ -52,7 +52,9 @@ class ParticleWindow(pyglet.window.Window):
         - left click spawns particle, which has velocity relative to movement
         - right click moves screen
         """
-        logging.debug(f"User dragging mouse {buttons} with {modifiers=} at {x=}, {y=}")
+        logging.debug(
+            f"User dragging mouse {buttons=} with {modifiers=} at {dx=}, {dy=}"
+        )
         if buttons == 1:
             self.drag = True
             self.mouse_line.visible = True
@@ -83,3 +85,4 @@ class ParticleWindow(pyglet.window.Window):
         self.world.settings.time_warp_factor += (
             scroll_x * self.world.settings.time_warp_multiplier
         )
+        logging.debug(f"Changing time warp to {self.world.settings.time_warp_factor}")

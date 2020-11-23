@@ -47,7 +47,9 @@ class PhysicalObject:
 
     def tick(self, delta_time: float) -> None:
         # if forces too large, destroy
-        logging.debug(pyrr.vector.length(self.forces))
+        logging.debug(
+            f"Planet at {self.position} experiencing {pyrr.vector.length(self.forces)} forces"
+        )
 
         self.momentum += self.forces * delta_time  # acceleration ?
         self.position = (
