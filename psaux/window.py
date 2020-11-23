@@ -41,7 +41,7 @@ class ParticleWindow(pyglet.window.Window):
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         self.click_coord = (x, y)
         self.mouse_line.x, self.mouse_line.y = x, y
-        if modifiers == 1:
+        if modifiers == 17:
             self.world.place_sun(x, y)
 
     def on_mouse_drag(
@@ -64,7 +64,7 @@ class ParticleWindow(pyglet.window.Window):
                 particle.position += Vector3([dx, dy, 0])
 
     def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
-        if self.drag and modifiers == 0:
+        if self.drag and modifiers == 16:
             start_x, start_y = self.click_coord
             movement_vector = Vector3([x - start_x, y - start_y, 0])
             delta_x, delta_y, _ = movement_vector
