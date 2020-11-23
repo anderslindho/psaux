@@ -71,7 +71,7 @@ class World:
         self.physics_time += delta_time * self.settings.time_warp_factor
 
         logging.debug(
-            f"{len(self.entities)} existing at real_time={self.real_time}, phys_time={self.physics_time=}"
+            f"{len(self.entities)} existing at real_time={self.real_time}, phys_time={self.physics_time}"
         )
 
     def draw(self):
