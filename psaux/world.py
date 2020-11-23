@@ -79,6 +79,9 @@ class World:
     def spawn_planet(
         self, x: float, y: float, velocity_right: float, velocity_up: float
     ):
+        logging.debug(
+            f"Planet is spawned at {x=}, {y=} with {velocity_right=}, {velocity_up=}"
+        )
         mass = 100.0
         velocity = Vector3([velocity_right, velocity_up, 0.0])
         planet = Circle(
@@ -91,4 +94,5 @@ class World:
         self.entities.append(planet)
 
     def place_sun(self, x, y):
+        logging.debug(f"Sun is moved to {x=}, {y=}")
         self.sun.position = Vector3([x, y, 0])
