@@ -9,9 +9,9 @@ from psaux.window import ParticleWindow
 
 
 if __name__ == "__main__":
-    log_filename = '{}.log'.format(int(datetime.datetime.now().timestamp()))
-    logging.basicConfig(filename=log_filename, level=logging.INFO)
+    log_filename = '{}.log'.format(datetime.datetime.now().strftime("%Y-%b-%d %H:%M"))
+    logging.basicConfig(filename=log_filename, level=logging.DEBUG, format="%(created)f - %(levelname)s - %(message)s")
     window = ParticleWindow()
     window.set_minimum_size(640, 480)
-    logging.info("starting run")
+    logging.debug("Starting run")
     pyglet.app.run()

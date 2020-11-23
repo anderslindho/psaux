@@ -1,4 +1,5 @@
 import itertools
+import logging
 
 import pyglet
 
@@ -46,7 +47,7 @@ class World:
             Circle(
                 position=Vector3([400.0, 480.0, 0.0]),
                 mass=1e4,
-                velocity=Vector3([2e-4, 2e-4, 0.0]),
+                velocity=Vector3([5e-4, 2e-4, 0.0]),
                 color=GREEN,
                 batch=self.entity_batch,
             )
@@ -65,6 +66,9 @@ class World:
         for entity in self.entities:
             entity.tick(time_step)
         self.entities = [entity for entity in self.entities if not entity.dead]
+        logging.debug(
+            f"{len(self.entities)} existing at {self.real_time=}, {self.physics_time=}"
+        )
 
         self.real_time += delta_time
         self.physics_time += delta_time * self.settings.time_warp_factor

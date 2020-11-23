@@ -1,3 +1,5 @@
+import logging
+
 import pyglet
 from pyrr import Vector3
 
@@ -14,7 +16,7 @@ class ParticleWindow(pyglet.window.Window):
             height=config.height,
             resizable=True,
             *args,
-            **kwargs
+            **kwargs,
         )
         pyglet.gl.glClearColor(*config.bg_color)
         pyglet.clock.schedule_interval(self.update, 1.0 / config.max_fps)
@@ -50,6 +52,7 @@ class ParticleWindow(pyglet.window.Window):
         - left click spawns particle, which has velocity relative to movement
         - right click moves screen
         """
+        logging.debug(f"User clicked with {buttons=} and {modifiers=} at {x=}, {y=}")
         if buttons == 1:
             self.drag = True
             self.mouse_line.visible = True
