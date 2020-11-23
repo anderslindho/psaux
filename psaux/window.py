@@ -83,6 +83,6 @@ class ParticleWindow(pyglet.window.Window):
     def on_mouse_scroll(self, x: float, y: float, scroll_x: float, scroll_y: float):
         """changes physical time speed. can be negative"""
         self.world.settings.time_warp_factor += (
-            scroll_x * self.world.settings.time_warp_multiplier
+            scroll_y * self.world.settings.time_warp_multiplier
         )
         logging.debug(f"Changing time warp to {self.world.settings.time_warp_factor}")
