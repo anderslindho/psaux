@@ -52,7 +52,7 @@ class ParticleWindow(pyglet.window.Window):
         - left click spawns particle, which has velocity relative to movement
         - right click moves screen
         """
-        logging.debug(f"User clicked with {buttons=} and {modifiers=} at {x=}, {y=}")
+        logging.debug(f"User dragging mouse {buttons} with {modifiers=} at {x=}, {y=}")
         if buttons == 1:
             self.drag = True
             self.mouse_line.visible = True
