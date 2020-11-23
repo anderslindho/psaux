@@ -1,5 +1,7 @@
 import logging
+from itertools import count
 from math import log
+from typing import Generator
 
 import pyglet
 import pyrr
@@ -9,19 +11,22 @@ from psaux.config import WorldSettings
 
 
 class PhysicalObject:
+    _id: Generator[int] = count(0)
+
     def __init__(
         self,
         position: Vector3,
         mass: float,
         velocity: Vector3,
     ):
+        self.id = next(self._id)
         self.position = position  # [metres, metres, metres]
         self._mass = mass  # kg
         self.momentum = mass * velocity
         self.forces = Vector3([0.0, 0.0, 0.0])
         self.dead = False
         logging.debug(
-            f"Spawned {self.__class__} at {self.position=} with {self.velocity=}"
+            f"Spawned {self.id=} type {self.__class__} at {self.position=} with {self.velocity=}"
         )
 
     @property
@@ -29,33 +34,32 @@ class PhysicalObject:
         return self._mass
 
     @mass.setter
-    def mass(self, value: float):
-        factor = value / self.mass
-        self._mass = value
+    def mass(self, new_mass: float) -> None:
+        factor = new_mass / self.mass
+        self._mass = new_mass
         self.momentum *= factor
 
     @property
-    def velocity(self) -> float:
+    def velocity(self) -> Vector3:
         return self.momentum / self.mass
 
     @velocity.setter
-    def velocity(self, new_velocity: Vector3):
+    def velocity(self, new_velocity: Vector3) -> None:
         self.momentum = new_velocity * self.mass
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return str(vars(self))
 
     def tick(self, delta_time: float) -> None:
         # if forces too large, destroy
-        logging.debug(
-            f"Planet at {self.position} experiencing {pyrr.vector.length(self.forces)} forces"
-        )
-
-        self.momentum += self.forces * delta_time  # acceleration ?
+        forces, self.forces = self.forces, Vector3([0.0, 0.0, 0.0])
+        self.momentum += forces * delta_time  # acceleration ?
         self.position = (
             self.position + self.velocity * delta_time
         )  # todo: update velocity, deal w separately // done, anything else ?
-        self.forces = Vector3([0.0, 0.0, 0.0])
+        logging.debug(
+            f"Planet at {self.position=} with {self.velocity=} experiencing {pyrr.vector.length(forces)} forces"
+        )
 
     def die(self) -> None:
         self.dead = True
@@ -81,13 +85,13 @@ class PhysicalObject:
         force_vector = -force_magnitude * unit_vector
         return force_vector
 
-    def elastic_collision_with(self, other):
+    def elastic_collision_with(self, other) -> None:
         """conservation of momentum"""
-        logging.debug(f"collision between\n- {self}\n- {other}")
         if self.mass > other.mass:
             other.die()
         else:
             self.die()
+        logging.debug(f"collision between\n- {self}\n- {other}")
 
 
 class Circle(PhysicalObject):

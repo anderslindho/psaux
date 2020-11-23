@@ -11,7 +11,7 @@ from psaux.window import ParticleWindow
 if __name__ == "__main__":
     log_filename = '{}.log'.format(datetime.datetime.now().strftime("%Y-%b-%d %H:%M"))
     logging.basicConfig(filename=log_filename, level=logging.DEBUG, format="%(created)f - %(levelname)s - %(message)s")
+    logging.debug("Starting psaux")
     window = ParticleWindow()
     window.set_minimum_size(640, 480)
-    logging.debug("Starting run")
     pyglet.app.run()

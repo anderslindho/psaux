@@ -41,8 +41,9 @@ class ParticleWindow(pyglet.window.Window):
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         self.click_coord = (x, y)
         self.mouse_line.x, self.mouse_line.y = x, y
-        if modifiers == 1:
+        if modifiers & pyglet.window.key.MOD_SHIFT:
             self.world.place_sun(x, y)
+        logging.debug(f"User pressed {button=} with {modifiers=} at {x=}, {y=}")
 
     def on_mouse_drag(
         self, x: float, y: float, dx: float, dy: float, buttons: int, modifiers: int
@@ -52,19 +53,19 @@ class ParticleWindow(pyglet.window.Window):
         - left click spawns particle, which has velocity relative to movement
         - right click moves screen
         """
-        logging.debug(
-            f"User dragging mouse {buttons=} with {modifiers=} at {dx=}, {dy=}"
-        )
-        if buttons == 1:
+        if buttons == pyglet.window.mouse.LEFT:
             self.drag = True
             self.mouse_line.visible = True
             self.mouse_line.x2, self.mouse_line.y2 = x, y
         else:
             for particle in self.world.entities:
                 particle.position += Vector3([dx, dy, 0])
+        logging.debug(
+            f"User dragging mouse {buttons=} with {modifiers=} at {dx=}, {dy=}"
+        )
 
     def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
-        if self.drag and modifiers == 0:
+        if self.drag and modifiers ^ pyglet.window.key.MOD_SHIFT:
             start_x, start_y = self.click_coord
             movement_vector = Vector3([x - start_x, y - start_y, 0])
             delta_x, delta_y, _ = movement_vector
@@ -82,7 +83,5 @@ class ParticleWindow(pyglet.window.Window):
 
     def on_mouse_scroll(self, x: float, y: float, scroll_x: float, scroll_y: float):
         """changes physical time speed. can be negative"""
-        self.world.settings.time_warp_factor += (
-            scroll_x * self.world.settings.time_warp_multiplier
-        )
-        logging.debug(f"Changing time warp to {self.world.settings.time_warp_factor}")
+        logging.debug(f"User scrolling mouse: {scroll_x=}, {scroll_y}")
+        self.world.modify_time_warp(scroll_x)
