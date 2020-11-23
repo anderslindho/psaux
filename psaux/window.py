@@ -40,6 +40,9 @@ class ParticleWindow(pyglet.window.Window):
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         self.click_coord = (x, y)
+        logging.debug(
+            f"User pressing mouse at {self.click_coord} with button {button} and modifiers {modifiers}"
+        )
         self.mouse_line.x, self.mouse_line.y = x, y
         if modifiers == 17:
             self.world.place_sun(x, y)
@@ -82,6 +85,7 @@ class ParticleWindow(pyglet.window.Window):
 
     def on_mouse_scroll(self, x: float, y: float, scroll_x: float, scroll_y: float):
         """changes physical time speed. can be negative"""
+        logging.debug(f"Scrolling: x={scroll_x}, y={scroll_y}")
         self.world.settings.time_warp_factor += (
             scroll_y * self.world.settings.time_warp_multiplier
         )
