@@ -71,7 +71,7 @@ class World:
         self.physics_time += delta_time * self.settings.time_warp_factor
 
         logging.debug(
-            f"{len(self.entities)} existing at {self.real_time=}, {self.physics_time=}"
+            f"{len(self.entities)} existing at real_time={self.real_time}, phys_time={self.physics_time=}"
         )
 
     def draw(self):
@@ -81,7 +81,7 @@ class World:
         self, x: float, y: float, velocity_right: float, velocity_up: float
     ):
         logging.debug(
-            f"Planet is spawned at {x=}, {y=} with {velocity_right=}, {velocity_up=}"
+            f"Planet is spawned at {x}, {y} with velocity {velocity_right}, {velocity_up}"
         )
         mass = 100.0
         velocity = Vector3([velocity_right, velocity_up, 0.0])
@@ -95,5 +95,5 @@ class World:
         self.entities.append(planet)
 
     def place_sun(self, x, y):
-        logging.debug(f"Sun is moved to {x=}, {y=}")
+        logging.debug(f"Sun is moved to {x}, {y}")
         self.sun.position = Vector3([x, y, 0])

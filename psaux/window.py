@@ -53,7 +53,7 @@ class ParticleWindow(pyglet.window.Window):
         - right click moves screen
         """
         logging.debug(
-            f"User dragging mouse {buttons=} with {modifiers=} at {dx=}, {dy=}"
+            f"User dragging mouse {buttons} with modifiers {modifiers} at {dx}, {dy}"
         )
         if buttons == 1:
             self.drag = True

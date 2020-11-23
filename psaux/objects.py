@@ -21,7 +21,7 @@ class PhysicalObject:
         self.forces = Vector3([0.0, 0.0, 0.0])
         self.dead = False
         logging.debug(
-            f"Spawned {self.__class__} at {self.position=} with {self.velocity=}"
+            f"Spawned {self.__class__} at pos={self.position} with vel={self.velocity}"
         )
 
     @property
@@ -59,7 +59,7 @@ class PhysicalObject:
 
     def die(self) -> None:
         self.dead = True
-        logging.debug(f"{self.__class__} died at {self.position=}")
+        logging.debug(f"{self.__class__} died at pos={self.position}")
 
     def overlaps_with(self, other) -> bool:
         return self.position == other.position
