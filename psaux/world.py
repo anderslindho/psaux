@@ -94,7 +94,7 @@ class World:
         )
         self.entities.append(planet)
         logging.debug(
-            f"Planet is spawned at {x=}, {y=} with {velocity_right=}, {velocity_up=}"
+            f"Object {planet.id} spawned at {x=}, {y=} with {velocity_right=}, {velocity_up=}"
         )
 
     def place_sun(self, x, y):

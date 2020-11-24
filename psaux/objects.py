@@ -11,7 +11,7 @@ from psaux.config import WorldSettings
 
 
 class PhysicalObject:
-    _id: Generator[int] = count(0)
+    _id: Generator = count(1)
 
     def __init__(
         self,
@@ -58,12 +58,12 @@ class PhysicalObject:
             self.position + self.velocity * delta_time
         )  # todo: update velocity, deal w separately // done, anything else ?
         logging.debug(
-            f"Planet at {self.position=} with {self.velocity=} experiencing {pyrr.vector.length(forces)} forces"
+            f"Object {self.id} at {self.position=} with {self.velocity=} experiencing {pyrr.vector.length(forces)} forces "
         )
 
     def die(self) -> None:
         self.dead = True
-        logging.debug(f"{self.__class__} died at {self.position=}")
+        logging.debug(f"Object {self.id} of {self.__class__} died at {self.position=}")
 
     def overlaps_with(self, other) -> bool:
         return self.position == other.position
@@ -91,7 +91,7 @@ class PhysicalObject:
             other.die()
         else:
             self.die()
-        logging.debug(f"collision between\n- {self}\n- {other}")
+        logging.debug(f"Collision between\n- {self}\n- {other}")
 
 
 class Circle(PhysicalObject):
@@ -103,8 +103,7 @@ class Circle(PhysicalObject):
         **kwargs,
     ):
         super(Circle, self).__init__(*args, **kwargs)
-
-        self.radius = log(self.mass, 2)  # m
+        self.radius = log(self.mass, 2)  # metres
         self.vertices = pyglet.shapes.Circle(
             self.position[0], self.position[1], self.radius, color=color, batch=batch
         )
