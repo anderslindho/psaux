@@ -3,7 +3,6 @@ utility script to check velocities of entities
 """
 
 import sys
-from math import sqrt, ceil
 
 from matplotlib import pyplot as plt
 
