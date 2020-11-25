@@ -1,5 +1,6 @@
+#!/usr/bin/env python3
 """
-utility script to check velocities of entities
+    utility script to check velocities of entities
 """
 
 import sys

@@ -3,9 +3,6 @@ import re
 
 
 def get_data_from(filename: str = None) -> list:
-    if filename is None:
-        return list()
-
     pattern = re.compile(
         r"^(\d*.\d*).+(?<=Object )(\d+).+(?<=self.position=)\w*\((\[[0-9.,\- e+]+])\).+\((\[[0-9.e\-, +]+\]*)"
     )
