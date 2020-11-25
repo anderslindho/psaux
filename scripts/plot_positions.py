@@ -1,6 +1,5 @@
 """
-utility script to check why velocity for some entities seem to get a bump
-possibly when collisions between other planets occur
+utility script to check orbits of entities
 """
 
 import sys
@@ -13,11 +12,11 @@ from extract_data import get_data_from
 if len(sys.argv) == 2:
     filename = sys.argv[1]
 else:
-    filename = "2020-Nov-23 22:46.log"
+    filename = "../2020-Nov-23 22:46.log"
 
 dataset = get_data_from(filename)
 
-### plot velocities
+### plot positions
 max_id = max([line[3] for line in dataset])
 for id in range(1, max_id + 1):
     vals = [line[1] for line in dataset if line[3] == id]

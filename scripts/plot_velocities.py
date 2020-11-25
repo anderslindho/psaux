@@ -1,6 +1,5 @@
 """
-utility script to check why velocity for some entities seem to get a bump
-possibly when collisions between other planets occur
+utility script to check velocities of entities
 """
 
 import sys
@@ -13,7 +12,7 @@ from extract_data import get_data_from
 if len(sys.argv) == 2:
     filename = sys.argv[1]
 else:
-    filename = "2020-Nov-23 22:46.log"
+    filename = "../2020-Nov-23 22:46.log"
 
 dataset = get_data_from(filename)
 
