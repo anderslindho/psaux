@@ -25,6 +25,7 @@ class PhysicalObject:
         self.momentum = mass * velocity
         self.forces = Vector3([0.0, 0.0, 0.0])
         self.dead = False
+
         logging.debug(
             f"Spawned {self.id=} type {self.__class__} at {self.position=} with {self.velocity=}"
         )
@@ -54,15 +55,15 @@ class PhysicalObject:
         # if forces too large, destroy
         forces, self.forces = self.forces, Vector3([0.0, 0.0, 0.0])
         self.momentum += forces * delta_time  # acceleration ?
-        self.position = (
-            self.position + self.velocity * delta_time
-        )  # todo: update velocity, deal w separately // done, anything else ?
+        self.position = self.position + self.velocity * delta_time
+
         logging.debug(
             f"Object {self.id} at {self.position=} with {self.velocity=} experiencing {pyrr.vector.length(forces)} forces "
         )
 
     def die(self) -> None:
         self.dead = True
+
         logging.debug(f"Object {self.id} of {self.__class__} died at {self.position=}")
 
     def overlaps_with(self, other) -> bool:
@@ -91,6 +92,7 @@ class PhysicalObject:
             other.die()
         else:
             self.die()
+
         logging.debug(f"Collision between\n- {self}\n- {other}")
 
 

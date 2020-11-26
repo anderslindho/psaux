@@ -2,7 +2,7 @@ import ast
 import re
 
 
-def get_data_from(filename: str = None) -> list:
+def get_data(filename: str = None) -> list:
     pattern = re.compile(
         r"^(\d*.\d*).+(?<=Object )(\d+).+(?<=self.position=)\w*\((\[[0-9.,\- e+]+])\).+\((\[[0-9.e\-, +]+\]*)"
     )

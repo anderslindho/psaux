@@ -57,11 +57,11 @@ class World:
         time_step = delta_time * self.settings.time_warp_factor
 
         for first, second in itertools.combinations(self.entities, 2):
+            first.forces += first.gravitational_force_from(second)
+            second.forces -= first.forces
+
             if first.overlaps_with(second):
                 first.elastic_collision_with(second)
-            else:
-                first.forces += first.gravitational_force_from(second)
-                second.forces -= first.forces
 
         for entity in self.entities:
             entity.tick(time_step)
@@ -69,12 +69,14 @@ class World:
 
         self.real_time += delta_time
         self.physics_time += delta_time * self.settings.time_warp_factor
+
         logging.debug(
             f"{len(self.entities)} existing at {self.real_time=}, {self.physics_time=}"
         )
 
     def modify_time_warp(self, change: float) -> None:
         self.settings.time_warp_factor += change * self.settings.time_warp_multiplier
+
         logging.debug(f"Changing time warp to {self.settings.time_warp_factor}")
 
     def draw(self):
@@ -93,10 +95,12 @@ class World:
             batch=self.entity_batch,
         )
         self.entities.append(planet)
+
         logging.debug(
             f"Object {planet.id} spawned at {x=}, {y=} with {velocity_right=}, {velocity_up=}"
         )
 
     def place_sun(self, x, y):
         self.sun.position = Vector3([x, y, 0])
+
         logging.debug(f"Sun is moved to {x=}, {y=}")
