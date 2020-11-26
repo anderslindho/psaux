@@ -53,6 +53,11 @@ class World:
             )
         )
 
+        logging.debug(
+            f"World created at {self.real_time=}, {self.physics_time=} with {len(self.entities)} entities\n"
+            f"{vars(self.settings)}"
+        )
+
     def update(self, delta_time: float) -> None:
         time_step = delta_time * self.settings.time_warp_factor
 
