@@ -45,9 +45,10 @@ class PhysicalObject:
     def velocity(self) -> Vector3:
         return self.momentum / self.mass
 
-    @velocity.setter
-    def velocity(self, new_velocity: Vector3) -> None:
-        self.momentum = new_velocity * self.mass
+    # maybe dont allow setting vel because of how position is updated? if so - todo: change tests
+    # @velocity.setter
+    # def velocity(self, new_velocity: Vector3) -> None:
+    #    self.momentum = new_velocity * self.mass
 
     def __repr__(self) -> str:
         return str(vars(self))
@@ -89,18 +90,13 @@ class PhysicalObject:
 
     def elastic_collision_with(self, other) -> None:
         """conservation of momentum"""
-        logging.debug(f"Collision between\n- {self}\n- {other}")
 
-        # if self.mass > other.mass:
-        #    other.die()
-        # else:
-        #    self.die()
-        # todo: if radii overlaps, first move objects apart so they dont occupy the same space
+        logging.debug(f"Collision between\n- {self}\n- {other}")
 
         sum_of_masses = self.mass + other.mass
         distance = np.linalg.norm(self.position - other.position) ** 2
 
-        self.momentum = (
+        self_new_momentum = (
             self.velocity
             - 2
             * other.mass
@@ -110,8 +106,7 @@ class PhysicalObject:
             * (self.position - other.position)
             * self.mass
         )
-
-        other.momentum = (
+        other_new_momentum = (
             other.velocity
             - 2
             * self.mass
@@ -121,9 +116,9 @@ class PhysicalObject:
             * (other.position - self.position)
             * other.mass
         )
-        # todo: refactor and clean up...
+        # todo: take derivative of momentum to get force instead ?
 
-        return self.velocity, other.velocity
+        return self_new_momentum, other_new_momentum
 
 
 class Circle(PhysicalObject):

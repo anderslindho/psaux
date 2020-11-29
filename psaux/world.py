@@ -53,7 +53,8 @@ class World:
             second.forces -= first.forces
 
             if first.overlaps_with(second):
-                first.elastic_collision_with(second)
+                # todo: if radii overlaps, first move objects apart so they dont occupy the same space
+                first.momentum, second.momentum = first.elastic_collision_with(second)
 
         for entity in self.entities:
             entity.tick(time_step)
