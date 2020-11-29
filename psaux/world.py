@@ -2,12 +2,11 @@ import itertools
 import logging
 
 import pyglet
-
 from pyrr import Vector3
 
-from psaux.config import WorldSettings, PsauxConfig
+from psaux.config import PsauxConfig, WorldSettings
 from psaux.objects import Circle
-from psaux.utils import RED, GREEN, BLUE
+from psaux.utils import BLUE, GREEN, RED
 
 
 class World:
@@ -90,7 +89,7 @@ class World:
     def spawn_planet(
         self, x: float, y: float, velocity_right: float, velocity_up: float
     ):
-        mass = 100.0
+        mass = 1e2
         velocity = Vector3([velocity_right, velocity_up, 0.0])
         planet = Circle(
             position=Vector3([x, y, 0.0]),

@@ -1,6 +1,5 @@
-import pytest
-
 import pyglet
+import pytest
 from pyrr import Vector3
 
 from psaux.objects import Circle, PhysicalObject

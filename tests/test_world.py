@@ -1,8 +1,8 @@
 import pytest
 from pyrr import Vector3
 
-from psaux.world import World
 from psaux.config import PsauxConfig
+from psaux.world import World
 
 
 class TestWorld:

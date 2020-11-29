@@ -3,6 +3,7 @@ from itertools import count
 from math import log
 from typing import Generator
 
+import numpy as np
 import pyglet
 import pyrr
 from pyrr import Vector3, vector
@@ -88,12 +89,41 @@ class PhysicalObject:
 
     def elastic_collision_with(self, other) -> None:
         """conservation of momentum"""
-        if self.mass > other.mass:
-            other.die()
-        else:
-            self.die()
-
         logging.debug(f"Collision between\n- {self}\n- {other}")
+
+        # if self.mass > other.mass:
+        #    other.die()
+        # else:
+        #    self.die()
+        # todo: if radii overlaps, first move objects apart so they dont occupy the same space
+
+        sum_of_masses = self.mass + other.mass
+        distance = np.linalg.norm(self.position - other.position) ** 2
+
+        self.momentum = (
+            self.velocity
+            - 2
+            * other.mass
+            / sum_of_masses
+            * np.dot(self.velocity - other.velocity, self.position - other.position)
+            / distance
+            * (self.position - other.position)
+            * self.mass
+        )
+
+        other.momentum = (
+            other.velocity
+            - 2
+            * self.mass
+            / sum_of_masses
+            * np.dot(other.velocity - self.velocity, other.position - self.position)
+            / distance
+            * (other.position - self.position)
+            * other.mass
+        )
+        # todo: refactor and clean up...
+
+        return self.velocity, other.velocity
 
 
 class Circle(PhysicalObject):
