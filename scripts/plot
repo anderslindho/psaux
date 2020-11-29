@@ -13,7 +13,7 @@ from logreader import get_data
 if len(sys.argv) == 2:
     filename = sys.argv[1]
 else:
-    filename = "../2020-Nov-26 20:41.log"
+    filename = "../2020-Nov-28 23:03.log"
 
 dataset = get_data(filename)
 
@@ -22,9 +22,9 @@ max_id = max([line[3] for line in dataset])
 time_start = min([line[0] for line in dataset if line[3] == 1])
 time_end = max([line[0] for line in dataset if line[3] == 1])
 
-fig_vel, axs_vel = plt.subplots(2, 4)
+fig_vel, axs_vel = plt.subplots(3, 4)
 axs_vel = axs_vel.flatten()
-fig_pos, axs_pos = plt.subplots(2, 4)
+fig_pos, axs_pos = plt.subplots(3, 4)
 axs_pos = axs_pos.flatten()
 
 for i in range(max_id):

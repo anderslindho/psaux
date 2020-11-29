@@ -5,7 +5,7 @@ from typing import Generator
 
 import pyglet
 import pyrr
-from pyrr import vector, Vector3
+from pyrr import Vector3, vector
 
 from psaux.config import WorldSettings
 
@@ -52,9 +52,9 @@ class PhysicalObject:
         return str(vars(self))
 
     def tick(self, delta_time: float) -> None:
-        # if forces too large, destroy
+        # todo: if forces too large, destroy
         forces, self.forces = self.forces, Vector3([0.0, 0.0, 0.0])
-        self.momentum += forces * delta_time  # acceleration ?
+        self.momentum += forces * delta_time
         self.position = self.position + self.velocity * delta_time
 
         logging.debug(
