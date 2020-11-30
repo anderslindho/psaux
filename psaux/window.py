@@ -21,7 +21,7 @@ class ParticleWindow(pyglet.window.Window):
         pyglet.gl.glClearColor(*config.bg_color)
         pyglet.clock.schedule_interval(self.update, 1.0 / config.max_fps)
 
-        self.fps_display = pyglet.window.FPSDisplay(self)
+        # todo: figure out if line can be moved into batch
         self.mouse_line = pyglet.shapes.Line(0.0, 0.0, 0.0, 0.0, width=2, color=BLUE)
         self.mouse_line.visible = False
         self.world = World()
@@ -32,7 +32,6 @@ class ParticleWindow(pyglet.window.Window):
     def on_draw(self):
         self.clear()
         self.world.draw()
-        self.fps_display.draw()
         self.mouse_line.draw()
 
     def update(self, delta_time: float):

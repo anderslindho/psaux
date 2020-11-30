@@ -1,3 +1,4 @@
+import datetime
 import itertools
 import logging
 
@@ -20,7 +21,15 @@ class World:
         self.physics_time = 0.0  # seconds
 
         self.entities = list()
-        self.entity_batch = pyglet.graphics.Batch()
+        self.drawing_batch = pyglet.graphics.Batch()
+        self.label = pyglet.text.Label(
+            "",
+            x=10,
+            y=10,
+            font_size=18,
+            color=(200, 200, 100, 200),
+            batch=self.drawing_batch,
+        )
 
         logging.debug(
             f"World created at {self.real_time=}, {self.physics_time=} with {len(self.entities)} entities\n"
@@ -37,7 +46,7 @@ class World:
             mass=1e6,
             velocity=Vector3([0.0, 0.0, 0.0]),
             color=RED,
-            batch=self.entity_batch,
+            batch=self.drawing_batch,
         )
         self.entities.append(self.sun)
 
@@ -74,8 +83,12 @@ class World:
                 needed_movement_from_second = unit_vector_to_other * (
                     distance_between_centres - first.radius + second.radius
                 )
-                first.position += needed_movement_from_second / 2
-                second.position -= needed_movement_from_second / 2
+                # todo: make them move relative to their weight? m_1 / m_1 + m_2
+                # _some_ sort of improvement is necessary here
+                if first.mass < second.mass:
+                    first.position += needed_movement_from_second / 4
+                else:
+                    second.position -= needed_movement_from_second / 4
 
                 (
                     first_momentum,
@@ -91,13 +104,15 @@ class World:
 
         self.real_time += delta_time
         self.physics_time += delta_time * self.settings.time_warp_factor
+        passed_time = datetime.timedelta(seconds=self.physics_time)
+        self.label.text = f"{len(self.entities) - 1} planets: {round(self.real_time, 2)} seconds (rt) - {passed_time.days} days (in-game)"
 
         logging.debug(
             f"{len(self.entities)} existing at {self.real_time=}, {self.physics_time=}"
         )
 
     def draw(self):
-        self.entity_batch.draw()
+        self.drawing_batch.draw()
 
     def modify_time_warp(self, change: float) -> None:
         self.settings.time_warp_factor += change * self.settings.time_warp_multiplier
@@ -117,7 +132,7 @@ class World:
             mass=mass,
             velocity=velocity,
             color=color,
-            batch=self.entity_batch,
+            batch=self.drawing_batch,
         )
         self.entities.append(planet)
 
