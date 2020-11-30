@@ -25,6 +25,7 @@ class PhysicalObject:
         self._mass = mass  # kg
         self.momentum = mass * velocity
         self.forces = Vector3([0.0, 0.0, 0.0])
+        self.intersecting = False
         self.dead = False
 
         logging.debug(
@@ -68,13 +69,19 @@ class PhysicalObject:
 
         logging.debug(f"Object {self.id} of {self.__class__} died at {self.position=}")
 
+    def distance_to(self, other) -> Vector3:
+        return self.position - other.position
+
     def overlaps_with(self, other) -> bool:
-        return self.position == other.position
+        return self.distance_to(other) <= 0
 
     def gravitational_force_from(self, other) -> Vector3:
         """
         :math:`\vec{F} = -G * (m_1 * m_2)/(|r|^2) * \vec{r}`
         """
+        if self.intersecting and other.intersecting:
+            return Vector3([0.0, 0.0, 0.0])
+
         distance_vec = self.position - other.position
         distance_vec_magnitude = vector.length(distance_vec)
         unit_vector = distance_vec / distance_vec_magnitude
@@ -145,5 +152,4 @@ class Circle(PhysicalObject):
         self.vertices.delete()
 
     def overlaps_with(self, other) -> bool:
-        distance_vec = self.position - other.position
-        return vector.length(distance_vec) < self.radius + other.radius
+        return vector.length(self.distance_to(other)) < self.radius + other.radius
