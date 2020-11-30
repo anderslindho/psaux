@@ -14,7 +14,9 @@ class TestWorld:
         assert len(self.world.entities) == 3
 
     def test_spawn_planet(self):
-        self.world.spawn_planet(0.0, 0.0, 0.0, 0.0)
+        self.world.spawn_planet(
+            position=Vector3([0.0, 0.0, 0.0]), velocity=Vector3([0.0, 0.0, 0.0])
+        )
 
         assert len(self.world.entities) == 4
 

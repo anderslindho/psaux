@@ -70,10 +70,12 @@ class PhysicalObject:
         logging.debug(f"Object {self.id} of {self.__class__} died at {self.position=}")
 
     def distance_to(self, other) -> Vector3:
-        return self.position - other.position
+        return vector.length(self.position - other.position)
 
     def overlaps_with(self, other) -> bool:
-        return self.distance_to(other) <= 0
+        return bool(
+            self.distance_to(other) <= 0.0
+        )  # cast to bool because we get np.bool_
 
     def gravitational_force_from(self, other) -> Vector3:
         """
@@ -152,4 +154,4 @@ class Circle(PhysicalObject):
         self.vertices.delete()
 
     def overlaps_with(self, other) -> bool:
-        return vector.length(self.distance_to(other)) < self.radius + other.radius
+        return self.distance_to(other) < self.radius + other.radius

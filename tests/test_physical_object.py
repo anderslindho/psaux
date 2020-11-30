@@ -35,13 +35,6 @@ class TestPhysicalObject:
         assert self.test_object.mass == FLOAT_100 * multiplier
         assert self.test_object.momentum == new_momentum
 
-    def test_modify_velocity(self):
-        multiplier = 10
-        self.test_object.velocity = VECTOR3_ONES * multiplier
-
-        assert self.test_object.mass == FLOAT_100
-        assert self.test_object.momentum == VECTOR3_TENS * FLOAT_100
-
     def test_tick_with_no_time_diff(self):
         self.test_object.tick(0)
 
