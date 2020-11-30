@@ -18,7 +18,7 @@ from scripts.logreader import get_data
 if len(sys.argv) == 2:
     filename = sys.argv[1]
 else:
-    filename = "../2020-Nov-29 23:43.log"
+    filename = "../2020-Nov-29 23:49.log"
 
 dataset = get_data(filename)
 
@@ -54,6 +54,9 @@ for i in range(max_id):
     axs[1].set_title("velocity")
 
     axs[2].plot(time, forces)
+    #axs[2].set_yscale('log')
+    axs[2].set_ylim(0, 1e-3)
+    axs[2].set_xlim(0, time_end - time_start)
     axs[2].set_title("force")
 
 for plot in plots:
