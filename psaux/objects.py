@@ -46,11 +46,6 @@ class PhysicalObject:
     def velocity(self) -> Vector3:
         return self.momentum / self.mass
 
-    # maybe dont allow setting vel because of how position is updated? if so - todo: change tests
-    # @velocity.setter
-    # def velocity(self, new_velocity: Vector3) -> None:
-    #    self.momentum = new_velocity * self.mass
-
     def __repr__(self) -> str:
         return str(vars(self))
 
@@ -61,7 +56,7 @@ class PhysicalObject:
         self.position = self.position + self.velocity * delta_time
 
         logging.debug(
-            f"Object {self.id} at {self.position=} with {self.velocity=} experiencing {pyrr.vector.length(forces)} forces "
+            f"Object {self.id} at {self.position=} with {self.velocity=} experiencing {pyrr.vector.length(forces)} forces"
         )
 
     def die(self) -> None:
@@ -69,8 +64,11 @@ class PhysicalObject:
 
         logging.debug(f"Object {self.id} of {self.__class__} died at {self.position=}")
 
-    def distance_to(self, other) -> Vector3:
-        return vector.length(self.position - other.position)
+    def vector_to(self, other) -> Vector3:
+        return self.position - other.position
+
+    def distance_to(self, other) -> float:
+        return vector.length(self.vector_to(other))
 
     def overlaps_with(self, other) -> bool:
         return bool(
@@ -84,35 +82,33 @@ class PhysicalObject:
         if self.intersecting and other.intersecting:
             return Vector3([0.0, 0.0, 0.0])
 
-        distance_vec = self.position - other.position
-        distance_vec_magnitude = vector.length(distance_vec)
-        unit_vector = distance_vec / distance_vec_magnitude
+        distance = self.distance_to(other)
+
+        unit_vector = self.vector_to(other) / distance
 
         force_magnitude = (
-            WorldSettings.gravity_constant
-            * self.mass
-            * other.mass
-            / distance_vec_magnitude ** 2
+            WorldSettings.gravity_constant * self.mass * other.mass / distance ** 2
         )
         force_vector = -force_magnitude * unit_vector
         return force_vector
 
-    def elastic_collision_with(self, other) -> None:
+    def elastic_collision_with(self, other) -> tuple:
         """conservation of momentum"""
 
         logging.debug(f"Collision between\n- {self}\n- {other}")
 
         sum_of_masses = self.mass + other.mass
-        distance = np.linalg.norm(self.position - other.position) ** 2
+        vector_to = self.vector_to(other)
+        distance_squared = self.distance_to(other) ** 2
 
         self_new_momentum = (
             self.velocity
             - 2
             * other.mass
             / sum_of_masses
-            * np.dot(self.velocity - other.velocity, self.position - other.position)
-            / distance
-            * (self.position - other.position)
+            * np.dot(self.velocity - other.velocity, vector_to)
+            / distance_squared
+            * vector_to
             * self.mass
         )
         other_new_momentum = (
@@ -120,9 +116,9 @@ class PhysicalObject:
             - 2
             * self.mass
             / sum_of_masses
-            * np.dot(other.velocity - self.velocity, other.position - self.position)
-            / distance
-            * (other.position - self.position)
+            * np.dot(other.velocity - self.velocity, -vector_to)
+            / distance_squared
+            * (-vector_to)
             * other.mass
         )
         # todo: take derivative of momentum to get force instead ?

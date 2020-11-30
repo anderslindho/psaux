@@ -63,8 +63,20 @@ class World:
             second.forces -= first.forces
 
             if first.overlaps_with(second):
-                first.intersecting = second.intersecting = True
-                # todo: if radii overlaps, first move objects apart so they dont occupy the same space
+                first.intersecting = (
+                    second.intersecting
+                ) = True  # todo: change so they keep track of what they intersect with?
+
+                distance_between_centres = first.distance_to(second)
+                unit_vector_to_other = (
+                    first.vector_to(second) / distance_between_centres
+                )
+                needed_movement_from_second = unit_vector_to_other * (
+                    distance_between_centres - first.radius + second.radius
+                )
+                first.position += needed_movement_from_second / 2
+                second.position -= needed_movement_from_second / 2
+
                 (
                     first_momentum,
                     second_momentum,
@@ -74,6 +86,7 @@ class World:
 
         for entity in self.entities:
             entity.tick(time_step)
+            entity.intersecting = False
         self.entities = [entity for entity in self.entities if not entity.dead]
 
         self.real_time += delta_time
