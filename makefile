@@ -8,5 +8,6 @@ help:
 .PHONY: help
 
 clean:
+	@echo "removing all log files"
 	rm -rf *.log
 .PHONY: clean
