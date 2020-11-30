@@ -70,13 +70,11 @@ class ParticleWindow(pyglet.window.Window):
         if self.drag and modifiers ^ pyglet.window.key.MOD_SHIFT:
             start_x, start_y = self.click_coord
             movement_vector = Vector3([x - start_x, y - start_y, 0])
-            delta_x, delta_y, _ = movement_vector
+            delta_x, delta_y, _ = movement_vector * self.world.settings.drag_sensitivity
 
             self.world.spawn_planet(
-                float(start_x),
-                float(start_y),
-                delta_x * self.world.settings.drag_sensitivity,
-                delta_y * self.world.settings.drag_sensitivity,
+                position=Vector3([start_x, start_y, 0.0]),
+                velocity=Vector3([delta_x, delta_y, 0.0]),
             )
 
         self.click_coord = None

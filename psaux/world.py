@@ -42,8 +42,18 @@ class World:
         self.entities.append(self.sun)
 
         # create starting planets
-        self.spawn_planet(200.0, 700.0, 3e-4, 4e-5, 1e4, GREEN)
-        self.spawn_planet(400.0, 480.0, 5e-4, 2e-4, 1e4, GREEN)
+        self.spawn_planet(
+            position=Vector3([200.0, 700.0, 0.0]),
+            velocity=Vector3([3e-4, 4e-5, 0.0]),
+            mass=1e4,
+            color=GREEN,
+        )
+        self.spawn_planet(
+            position=Vector3([400.0, 480.0, 0.0]),
+            velocity=Vector3([5e-4, 2e-4, 0.0]),
+            mass=1e4,
+            color=GREEN,
+        )
 
     def update(self, delta_time: float) -> None:
         time_step = delta_time * self.settings.time_warp_factor
@@ -84,16 +94,13 @@ class World:
     # todo: accept vectors instead
     def spawn_planet(
         self,
-        x: float,
-        y: float,
-        velocity_right: float,
-        velocity_up: float,
+        position: Vector3,
+        velocity: Vector3,
         mass: float = 1e2,
         color: tuple = BLUE,
     ):
-        velocity = Vector3([velocity_right, velocity_up, 0.0])
         planet = Circle(
-            position=Vector3([x, y, 0.0]),
+            position=position,
             mass=mass,
             velocity=velocity,
             color=color,
@@ -101,9 +108,7 @@ class World:
         )
         self.entities.append(planet)
 
-        logging.debug(
-            f"Object {planet.id} spawned at {x=}, {y=} with {velocity_right=}, {velocity_up=}"
-        )
+        logging.debug(f"Object {planet.id} spawned at {position=} with {velocity=}")
 
     def place_sun(self, x, y):
         self.sun.position = Vector3([x, y, 0])
