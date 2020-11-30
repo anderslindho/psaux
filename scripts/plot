@@ -18,7 +18,7 @@ from scripts.logreader import get_data
 if len(sys.argv) == 2:
     filename = sys.argv[1]
 else:
-    filename = "../2020-Nov-28 23:06.log"
+    filename = "../2020-Nov-29 23:43.log"
 
 dataset = get_data(filename)
 
@@ -30,6 +30,7 @@ fig_vel, axs_vel = plt.subplots(3, 4)
 axs_vel = axs_vel.flatten()
 fig_pos, axs_pos = plt.subplots(3, 4)
 axs_pos = axs_pos.flatten()
+# todo: plot also forces
 
 for i in range(max_id):
     time = [line[0] - time_start for line in dataset if line[3] == i + 1]
