@@ -1,6 +1,12 @@
 # psaux
 
-A "particle" simulator hobby project (more like planets)
+A "particle" simulator hobby project (more like planets).
+
+Entities experience (currently) infinite n-body gravity and scatter mostly elastically.
+
+Uses simplistic graphics coming with pyglet as OpenGL wrapper. Will fix later.
+
+There are some utility scripts for debugging.
 
 ## Prereqs
 
