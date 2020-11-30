@@ -12,13 +12,18 @@ import sys
 
 from matplotlib import pyplot as plt
 
+from psaux.config import PsauxConfig
+
 from scripts.logreader import get_data
+
+WORLD_HEIGHT = PsauxConfig.height
+WORLD_WIDTH = PsauxConfig.width
 
 
 if len(sys.argv) == 2:
     filename = sys.argv[1]
 else:
-    filename = "../2020-Nov-29 23:49.log"
+    filename = "../2020-Nov-30 17:43.log"
 
 dataset = get_data(filename)
 
@@ -36,28 +41,30 @@ for i in range(max_id):
     time = [line[0] - time_start for line in dataset if line[3] == i + 1]
     position = [line[1] for line in dataset if line[3] == i + 1]
     velocity = [line[2] for line in dataset if line[3] == i + 1]
+    print(f"{min(velocity)=}, {max(velocity)=}")  # todo: remove
     forces = [line[4] for line in dataset if line[3] == i + 1]
 
     fig.suptitle(i + 1)
 
+    axs[0].set_title("position")
     axs[0].plot(
         [direction[0] for direction in position],
         [direction[1] for direction in position],
     )
-    axs[0].set_xlim(0, 1024)
-    axs[0].set_ylim(0, 768)
-    axs[0].set_title("position")
+    axs[0].set_xlim(-0.5 * WORLD_WIDTH, 1.5 * WORLD_WIDTH)
+    axs[0].set_ylim(-0.5 * WORLD_HEIGHT, 1.5 * WORLD_HEIGHT)
 
+    axs[1].set_title("velocity")
     for j, char in enumerate(["x", "y"]):
         axs[1].plot(time, [direction[j] for direction in velocity], label=char)
         axs[1].set_xlim(0, time_end - time_start)
-    axs[1].set_title("velocity")
+    axs[1].set_ylim(-1e-2, 1e-2)
 
-    axs[2].plot(time, forces)
-    #axs[2].set_yscale('log')
-    axs[2].set_ylim(0, 1e-3)
-    axs[2].set_xlim(0, time_end - time_start)
     axs[2].set_title("force")
+    axs[2].plot(time, forces)
+    axs[2].set_yscale('log')
+    axs[2].set_ylim(top=1e-3)
+    axs[2].set_xlim(0, time_end - time_start)
 
 for plot in plots:
     plot[0].show()
