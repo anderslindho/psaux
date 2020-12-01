@@ -27,7 +27,6 @@ class PhysicalObject:
         self.forces = Vector3([0.0, 0.0, 0.0])
         self.intersecting = False
         self.dead = False
-
         logging.debug(
             f"Spawned {self.id=} type {self.__class__} at {self.position=} with {self.velocity=}"
         )
@@ -53,17 +52,14 @@ class PhysicalObject:
         logging.debug(
             f"Object {self.id} at {self.position=} with {self.velocity=} experiencing {pyrr.vector.length(self.forces)} forces"
         )
-
         # todo: if forces too large, destroy
         self.momentum += self.forces * delta_time
-        # todo: overlap adjustment should happen here; after momentum is adjusted
         self.position += self.velocity * delta_time
         self.forces = Vector3([0.0, 0.0, 0.0])
 
     def die(self) -> None:
-        self.dead = True
-
         logging.debug(f"Object {self.id} of {self.__class__} died at {self.position=}")
+        self.dead = True
 
     def vector_to(self, other) -> Vector3:
         return self.position - other.position
@@ -82,20 +78,17 @@ class PhysicalObject:
         """
         if self.intersecting and other.intersecting:
             return Vector3([0.0, 0.0, 0.0])
-
-        distance = self.distance_to(other)
-        unit_vector = self.vector_to(other) / distance
-        force_magnitude = (
-            WorldSettings.gravity_constant * self.mass * other.mass / distance ** 2
-        )
-        force_vector = -force_magnitude * unit_vector
-        return force_vector
+        else:
+            distance = self.distance_to(other)
+            unit_vector = self.vector_to(other) / distance
+            force_magnitude = (
+                WorldSettings.gravity_constant * self.mass * other.mass / distance ** 2
+            )
+            force_vector = -force_magnitude * unit_vector
+            return force_vector
 
     def elastic_collision_with(self, other) -> tuple:
-        """conservation of momentum"""
-
         logging.debug(f"Collision between\n- {self}\n- {other}")
-
         sum_of_masses = self.mass + other.mass
         vector_to = self.vector_to(other)
         distance_squared = self.distance_to(other) ** 2
@@ -121,7 +114,6 @@ class PhysicalObject:
             * other.mass
         )
         # todo: take derivative of momentum to get force instead ?
-
         return self_new_momentum, other_new_momentum
 
 
@@ -149,4 +141,4 @@ class Circle(PhysicalObject):
         self.vertices.delete()
 
     def overlaps_with(self, other) -> bool:
-        return self.distance_to(other) < self.radius + other.radius
+        return self.distance_to(other) <= self.radius + other.radius
