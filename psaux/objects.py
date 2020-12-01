@@ -50,15 +50,15 @@ class PhysicalObject:
         return str(vars(self))
 
     def tick(self, delta_time: float) -> None:
-        # todo: if forces too large, destroy
-        forces, self.forces = self.forces, Vector3([0.0, 0.0, 0.0])
-        self.momentum += forces * delta_time
-        # todo: overlap adjustment should happen here; after momentum is adjusted
-        self.position = self.position + self.velocity * delta_time
-
         logging.debug(
-            f"Object {self.id} at {self.position=} with {self.velocity=} experiencing {pyrr.vector.length(forces)} forces"
+            f"Object {self.id} at {self.position=} with {self.velocity=} experiencing {pyrr.vector.length(self.forces)} forces"
         )
+
+        # todo: if forces too large, destroy
+        self.momentum += self.forces * delta_time
+        # todo: overlap adjustment should happen here; after momentum is adjusted
+        self.position += self.velocity * delta_time
+        self.forces = Vector3([0.0, 0.0, 0.0])
 
     def die(self) -> None:
         self.dead = True
@@ -84,9 +84,7 @@ class PhysicalObject:
             return Vector3([0.0, 0.0, 0.0])
 
         distance = self.distance_to(other)
-
         unit_vector = self.vector_to(other) / distance
-
         force_magnitude = (
             WorldSettings.gravity_constant * self.mass * other.mass / distance ** 2
         )
