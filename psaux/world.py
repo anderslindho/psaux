@@ -68,8 +68,8 @@ class World:
         time_step = delta_time * self.settings.time_warp_factor
 
         for first, second in itertools.combinations(self.entities, 2):
-            first.forces += first.gravitational_force_from(second)
-            second.forces -= first.forces
+            first.forces = first.gravitational_force_from(second)
+            second.forces = -first.forces
 
             if first.overlaps_with(second):
                 first.intersecting = (
@@ -100,8 +100,8 @@ class World:
         for entity in self.entities:
             entity.tick(time_step)
             entity.intersecting = False
-        self.entities = [entity for entity in self.entities if not entity.dead]
 
+        self.entities = [entity for entity in self.entities if not entity.dead]
         self.real_time += delta_time
         self.physics_time += delta_time * self.settings.time_warp_factor
         passed_time = datetime.timedelta(seconds=self.physics_time)
