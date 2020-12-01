@@ -50,14 +50,15 @@ class PhysicalObject:
         return str(vars(self))
 
     def tick(self, delta_time: float) -> None:
+        logging.debug(
+            f"Object {self.id} at {self.position=} with {self.velocity=} experiencing {pyrr.vector.length(self.forces)} forces"
+        )
+
         # todo: if forces too large, destroy
         self.momentum += self.forces * delta_time
         # todo: overlap adjustment should happen here; after momentum is adjusted
         self.position += self.velocity * delta_time
-
-        logging.debug(
-            f"Object {self.id} at {self.position=} with {self.velocity=} experiencing {pyrr.vector.length(self.forces)} forces"
-        )
+        self.forces = Vector3([0.0, 0.0, 0.0])
 
     def die(self) -> None:
         self.dead = True
@@ -81,8 +82,6 @@ class PhysicalObject:
         """
         if self.intersecting and other.intersecting:
             return Vector3([0.0, 0.0, 0.0])
-
-        # todo: don't apply forces if too far away (or if forces too low?)
 
         distance = self.distance_to(other)
         unit_vector = self.vector_to(other) / distance
