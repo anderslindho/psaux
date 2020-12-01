@@ -57,6 +57,7 @@ class World:
             mass=1e4,
             color=GREEN,
         )
+        self.spawn_planet(Vector3([213.3, 700.0, 0.0]), Vector3([-3e-4, 4e-5, 0.0]))
         self.spawn_planet(
             position=Vector3([400.0, 480.0, 0.0]),
             velocity=Vector3([5e-4, 2e-4, 0.0]),
@@ -79,8 +80,8 @@ class World:
                     first_momentum,
                     second_momentum,
                 ) = first.elastic_collision_with(second)
-                first.momentum += first_momentum
-                second.momentum += second_momentum
+                first.forces += first_momentum / time_step
+                second.forces += second_momentum / time_step
 
             first.forces += first.gravitational_force_from(second)
             second.forces -= first.forces
