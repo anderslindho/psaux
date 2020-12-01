@@ -53,6 +53,7 @@ class PhysicalObject:
         # todo: if forces too large, destroy
         forces, self.forces = self.forces, Vector3([0.0, 0.0, 0.0])
         self.momentum += forces * delta_time
+        # todo: overlap adjustment should happen here; after momentum is adjusted
         self.position = self.position + self.velocity * delta_time
 
         logging.debug(

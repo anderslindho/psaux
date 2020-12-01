@@ -8,7 +8,7 @@ from psaux.utils import BLUE
 from psaux.world import World
 
 
-class ParticleWindow(pyglet.window.Window):
+class ParticleSimulator(pyglet.window.Window):
     def __init__(self, config: PsauxConfig = PsauxConfig(), *args, **kwargs):
         super().__init__(
             caption="psaux",

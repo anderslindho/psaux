@@ -5,12 +5,16 @@ import logging
 
 import pyglet
 
-from psaux.window import ParticleWindow
+from psaux.app import ParticleSimulator
+from psaux.config import PsauxConfig
 
 
 if __name__ == "__main__":
-    log_filename = '{}.log'.format(datetime.datetime.now().strftime("%Y-%b-%d %H:%M"))
-    logging.basicConfig(filename=log_filename, level=logging.DEBUG, format="%(created)f - %(levelname)s - %(message)s")
-    window = ParticleWindow()
-    window.set_minimum_size(640, 480)
+    if PsauxConfig.debug:
+        log_filename = '{}.log'.format(datetime.datetime.now().strftime("%Y-%b-%d %H:%M"))
+        logging.basicConfig(filename=log_filename, level=logging.DEBUG, format="%(created)f - %(levelname)s - %(message)s")
+    else:
+        logging.basicConfig(level=logging.WARN)
+    app = ParticleSimulator()
+    app.set_minimum_size(640, 480)
     pyglet.app.run()
