@@ -23,7 +23,7 @@ WORLD_WIDTH = PsauxConfig.width
 if len(sys.argv) == 2:
     filename = sys.argv[1]
 else:
-    filename = "../2020-Nov-30 22:27.log"
+    filename = "../logs/2020-Dec-02 00:03.log"
 
 dataset = get_data(filename)
 
@@ -62,7 +62,7 @@ for i in range(max_id):
     axs[2].set_title("force")
     axs[2].plot(time, forces)
     axs[2].set_yscale('log')
-    axs[2].set_ylim(1e-9, 5e-3)
+    axs[2].set_ylim(2.5e-9, 5e-3)
     axs[2].set_xlim(0, time_end - time_start)
 
 for plot in plots:

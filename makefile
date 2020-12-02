@@ -9,5 +9,5 @@ help:
 
 clean:
 	@echo "removing all log files"
-	rm -rf *.log
+	rm -rf logs/*.log
 .PHONY: clean

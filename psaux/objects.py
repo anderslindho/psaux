@@ -67,6 +67,9 @@ class PhysicalObject:
     def distance_to(self, other) -> float:
         return vector.length(self.vector_to(other))
 
+    def squared_distance_to(self, other) -> float:
+        return vector.squared_length(self.vector_to(other))
+
     def overlaps_with(self, other) -> bool:
         return bool(
             self.distance_to(other) <= 0.0
@@ -79,19 +82,18 @@ class PhysicalObject:
         if self.intersecting and other.intersecting:
             return Vector3([0.0, 0.0, 0.0])
         else:
-            distance = self.distance_to(other)
-            unit_vector = self.vector_to(other) / distance
-            force_magnitude = (
-                WorldSettings.gravity_constant * self.mass * other.mass / distance ** 2
-            )
-            force_vector = -force_magnitude * unit_vector
-            return force_vector
+            return -(
+                WorldSettings.gravity_constant
+                * self.mass
+                * other.mass
+                / self.squared_distance_to(other)
+            ) * vector.normalise(self.vector_to(other))
 
     def elastic_collision_with(self, other) -> tuple:
         logging.debug(f"Collision between\n- {self}\n- {other}")
         sum_of_masses = self.mass + other.mass
         vector_to = self.vector_to(other)
-        distance_squared = self.distance_to(other) ** 2
+        distance_squared = self.squared_distance_to(other)
 
         self_new_momentum = (
             self.velocity
@@ -113,7 +115,6 @@ class PhysicalObject:
             * (-vector_to)
             * other.mass
         )
-        # todo: take derivative of momentum to get force instead ?
         return self_new_momentum, other_new_momentum
 
 

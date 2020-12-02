@@ -12,11 +12,7 @@ from psaux.utils import BLUE, GREEN, RED
 
 class World:
     def __init__(self, settings: WorldSettings = None):
-        if settings is None:
-            self.settings = WorldSettings()
-        else:
-            self.settings = settings
-
+        self.settings = WorldSettings() if settings is None else settings
         self.real_time = 0.0  # seconds
         self.physics_time = 0.0  # seconds
 
@@ -74,7 +70,7 @@ class World:
                     second.intersecting
                 ) = True  # todo: change so they keep track of what they intersect with?
 
-                # self.move_apart_planets(first, second)
+                # self.move_apart_planets(first, second)  # fixme: not sure if should be kept ?
 
                 (
                     first_momentum,
@@ -82,7 +78,6 @@ class World:
                 ) = first.elastic_collision_with(second)
                 first.forces += first_momentum / time_step
                 second.forces += second_momentum / time_step
-
             first.forces += first.gravitational_force_from(second)
             second.forces -= first.forces
 
@@ -107,8 +102,7 @@ class World:
         needed_movement_from_second = unit_vector_to_other * (
             distance_between_centres - first.radius + second.radius
         )
-        # todo: make them move relative to their weight? m_1 / m_1 + m_2
-        # _some_ sort of improvement is necessary here
+        # fixme: _some_ sort of improvement is necessary here
         if first.mass < second.mass:
             first.position += needed_movement_from_second / 4
         else:
