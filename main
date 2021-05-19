@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser
 import datetime
 import logging
+from argparse import ArgumentParser
 from pathlib import Path
 
 import pyglet
@@ -15,11 +15,13 @@ def psaux(args):
     if args.debug:
         log_folder = Path.cwd() / "logs"
         log_folder.mkdir(parents=True, exist_ok=True)
-        log_filename = f'{log_folder}/{datetime.datetime.now().strftime("%Y-%b-%d %H:%M")}.log'
+        log_filename = (
+            f'{log_folder}/{datetime.datetime.now().strftime("%Y-%b-%d %H:%M")}.log'
+        )
         logging.basicConfig(
             filename=log_filename,
             level=logging.DEBUG,
-            format="%(created)f - %(levelname)s - %(message)s"
+            format="%(created)f - %(levelname)s - %(message)s",
         )
     else:
         logging.basicConfig(level=logging.WARN)
@@ -38,4 +40,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

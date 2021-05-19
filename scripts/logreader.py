@@ -24,4 +24,3 @@ def get_data(filename: str = None) -> list:
             dataset.append([time, positions, velocities, ids, forces])
 
     return dataset
-

@@ -19,4 +19,3 @@ class WorldSettings:
     time_warp_factor: float = 1e5
     time_warp_multiplier: float = 1e4
     drag_sensitivity: float = 5e-6
-
