@@ -1,7 +1,10 @@
 *.pyc
 *.pyo
+
 .idea/
 .DS_Store
+
 *.log
-.pytest_cache/
 logs/
+
+venv/

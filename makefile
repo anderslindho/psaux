@@ -1,13 +1,13 @@
 .DEFAULT_GOAL: help
 
-all: help
 .PHONY: all
+all: help
 
+.PHONY: help
 help:
 	@echo "run ./main"
-.PHONY: help
 
+.PHONY: clean
 clean:
 	@echo "removing all log files"
 	rm -rf logs/*.log
-.PHONY: clean
