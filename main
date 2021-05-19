@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from argparse import ArgumentParser
 import datetime
 import logging
 
@@ -9,7 +10,7 @@ from psaux.app import ParticleSimulator
 from psaux.config import PsauxConfig
 
 
-if __name__ == "__main__":
+def psaux(debug: bool = None):
     if PsauxConfig.debug:
         log_folder = "logs"
         log_filename = '{}/{}.log'.format(log_folder, datetime.datetime.now().strftime("%Y-%b-%d %H:%M"))
@@ -24,4 +25,15 @@ if __name__ == "__main__":
     app = ParticleSimulator()
     app.set_minimum_size(640, 480)
     pyglet.app.run()
+
+
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("--debug")
+    args = parser.parse_args()
+    psaux(**vars(args))
+
+
+if __name__ == "__main__":
+    main()
 

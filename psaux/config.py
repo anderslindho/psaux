@@ -7,7 +7,6 @@ class PsauxConfig:
     height: int = 768
     max_fps: int = 60
     bg_color: tuple = (0.15, 0.1, 0.2, 1.0)
-    debug: bool = False
 
 
 def delta_time():
