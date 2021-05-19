@@ -12,12 +12,10 @@ import sys
 
 from matplotlib import pyplot as plt
 
-from psaux.config import PsauxConfig
+from logreader import get_data
 
-from scripts.logreader import get_data
-
-WORLD_HEIGHT = PsauxConfig.height
-WORLD_WIDTH = PsauxConfig.width
+WORLD_HEIGHT = 1024
+WORLD_WIDTH = 768
 
 
 if len(sys.argv) == 2:
@@ -67,3 +65,4 @@ for i in range(max_id):
 
 for plot in plots:
     plot[0].show()
+
