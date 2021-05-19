@@ -10,4 +10,4 @@ help:
 .PHONY: clean
 clean:
 	@echo "removing all log files"
-	rm -rf logs/*.log
+	@rm -rf logs
