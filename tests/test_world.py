@@ -11,14 +11,14 @@ class TestWorld:
         self.world = World()
 
     def test_generated_particles(self):
-        assert len(self.world.entities) == 3
+        assert len(self.world.entities) == 4
 
     def test_spawn_planet(self):
         self.world.spawn_planet(
             position=Vector3([0.0, 0.0, 0.0]), velocity=Vector3([0.0, 0.0, 0.0])
         )
 
-        assert len(self.world.entities) == 4
+        assert len(self.world.entities) == 5
 
     def test_sun_position(self):
         assert self.world.sun.position == Vector3(
